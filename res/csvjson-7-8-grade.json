@@ -1,0 +1,322 @@
+[
+  {
+    "name": "Dhruv Viraya",
+    "project": "Force of Nature",
+    "prize": 0
+  },
+  {
+    "name": "David Zheng",
+    "project": "Edge of the Realm",
+    "prize": 1
+  },
+  {
+    "name": "Xinke Wang",
+    "project": "Metal Clash",
+    "prize": 1
+  },
+  {
+    "name": "Raymond Kuang",
+    "project": "Platformer game",
+    "prize": 1
+  },
+  {
+    "name": "Spencer Yuan",
+    "project": "Plane combined",
+    "prize": 1
+  },
+  {
+    "name": "Mathew Xie",
+    "project": "Notai",
+    "prize": 1
+  },
+  {
+    "name": "Melody Bao",
+    "project": "Space Invaders",
+    "prize": 2
+  },
+  {
+    "name": "Darren Huang",
+    "project": "9 rooms",
+    "prize": 2
+  },
+  {
+    "name": "Mingxin (Sissi) Yu",
+    "project": "Journey to the West",
+    "prize": 2
+  },
+  {
+    "name": "Athena Bi",
+    "project": "Archive of book games",
+    "prize": 2
+  },
+  {
+    "name": "Larry Zhou",
+    "project": "Gladiator Fight",
+    "prize": 2
+  },
+  {
+    "name": "Yantting Li",
+    "project": "Med Tracker and box",
+    "prize": 2
+  },
+  {
+    "name": "Zihao Lin",
+    "project": "Wild West Shooter",
+    "prize": 2
+  },
+  {
+    "name": "Tony-Tom Bai",
+    "project": "Vaccine vs virus",
+    "prize": 2
+  },
+  {
+    "name": "Anya Li",
+    "project": "FeedForFit",
+    "prize": 2
+  },
+  {
+    "name": "Jerry Li",
+    "project": "BloodSimpleScan",
+    "prize": 2
+  },
+  {
+    "name": "Grace Huang",
+    "project": "Selcouth(Unity)",
+    "prize": 2
+  },
+  {
+    "name": "Matthew Olen",
+    "project": "Ping Pong(Python)",
+    "prize": 2
+  },
+  {
+    "name": "Adrian Shou",
+    "project": "Python Snake Game",
+    "prize": 2
+  },
+  {
+    "name": "Thomas Yang",
+    "project": "Platform Game Peinguin",
+    "prize": 2
+  },
+  {
+    "name": "Nina Huang",
+    "project": "Virtual Pet",
+    "prize": 2
+  },
+  {
+    "name": "Siyou Wang",
+    "project": "Math RPG",
+    "prize": 2
+  },
+  {
+    "name": "Matt Chui",
+    "project": "The Game of Life",
+    "prize": 2
+  },
+  {
+    "name": "Xiaoke Pang",
+    "project": "Tic Tac Toe(Python)",
+    "prize": 2
+  },
+  {
+    "name": "Jonathan Yan",
+    "project": "Ultra Death Bot",
+    "prize": 3
+  },
+  {
+    "name": "Belinda Mao",
+    "project": "TravelerS",
+    "prize": 3
+  },
+  {
+    "name": "Qifeng (Jerry) Sun",
+    "project": "Obby",
+    "prize": 3
+  },
+  {
+    "name": "Isaac Tan",
+    "project": "Tic Tac Toe",
+    "prize": 3
+  },
+  {
+    "name": "Jiaheng Su",
+    "project": "Monopoly",
+    "prize": 3
+  },
+  {
+    "name": "Jerry Wang",
+    "project": "Egg Catch Game",
+    "prize": 3
+  },
+  {
+    "name": "Ivan Gao",
+    "project": "Shape Game",
+    "prize": 3
+  },
+  {
+    "name": "Kendrick Mui",
+    "project": "TA DA To Do Reminder",
+    "prize": 3
+  },
+  {
+    "name": "Tommy Xie",
+    "project": "5 Language Interest Calculator",
+    "prize": 3
+  },
+  {
+    "name": "Nate Zhou",
+    "project": "Game Simulator",
+    "prize": 3
+  },
+  {
+    "name": "Zachery Zhang",
+    "project": "Shooting game",
+    "prize": 3
+  },
+  {
+    "name": "Jason Zhang",
+    "project": "Ball roll game",
+    "prize": 3
+  },
+  {
+    "name": "Tiger Wang",
+    "project": "Pygame platformer",
+    "prize": 3
+  },
+  {
+    "name": "Anna Dai",
+    "project": "The productivity",
+    "prize": 3
+  },
+  {
+    "name": "Sean Ning",
+    "project": "RPG Game",
+    "prize": 3
+  },
+  {
+    "name": "Ethan Zhang",
+    "project": "A Really Long Obby (Roblox)",
+    "prize": 3
+  },
+  {
+    "name": "Zinuo Xu",
+    "project": "Maze Prize Finder",
+    "prize": 3
+  },
+  {
+    "name": "Jingxing Chen",
+    "project": "Handman",
+    "prize": 3
+  },
+  {
+    "name": "Alex Wen",
+    "project": "Calculator",
+    "prize": 3
+  },
+  {
+    "name": "Lucas Li",
+    "project": "Calories calculator",
+    "prize": 3
+  },
+  {
+    "name": "Tyler Chen",
+    "project": "Car Game",
+    "prize": 3
+  },
+  {
+    "name": "Victor Chen",
+    "project": "Glitch Generation(Unity)",
+    "prize": 3
+  },
+  {
+    "name": "Russel Qian",
+    "project": "Mimic RPG Game(Python)",
+    "prize": 4
+  },
+  {
+    "name": "Shuanghua (George) Yang",
+    "project": "Timer",
+    "prize": 4
+  },
+  {
+    "name": "Ryan Wang",
+    "project": "The little fan",
+    "prize": 4
+  },
+  {
+    "name": "Cody Duan",
+    "project": "Claw robot",
+    "prize": 4
+  },
+  {
+    "name": "Albert Teoh",
+    "project": "Gun Game",
+    "prize": 4
+  },
+  {
+    "name": "Kam Ching Wu",
+    "project": "Computer Fan(Hardware Python)",
+    "prize": 4
+  },
+  {
+    "name": "Nathan Hsu",
+    "project": "Water Level Reduction(Hardware Python)",
+    "prize": 4
+  },
+  {
+    "name": "Owen Chen",
+    "project": "Soil Moisture(Hardware Python)",
+    "prize": 4
+  },
+  {
+    "name": "Evangeline Dawson",
+    "project": "Virtual Sky",
+    "prize": 4
+  },
+  {
+    "name": "Alysha Winters",
+    "project": "AR Game",
+    "prize": 4
+  },
+  {
+    "name": "Janae Kearns",
+    "project": "Hunter Game",
+    "prize": 4
+  },
+  {
+    "name": "Issac Cowan",
+    "project": "Minecraft Maze",
+    "prize": 4
+  },
+  {
+    "name": "Patryk Duggan",
+    "project": "Encryption Test",
+    "prize": 4
+  },
+  {
+    "name": "Esa Norris",
+    "project": "Dog Tracker",
+    "prize": 4
+  },
+  {
+    "name": "Dakota Ford",
+    "project": "Forest Run",
+    "prize": 4
+  },
+  {
+    "name": "Naeem Read",
+    "project": "LifeSave",
+    "prize": 4
+  },
+  {
+    "name": "Elina Millington",
+    "project": "Hill Star",
+    "prize": 4
+  },
+  {
+    "name": "Jada Donaldson",
+    "project": "Music Play",
+    "prize": 4
+  }
+]
