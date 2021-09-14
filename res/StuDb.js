@@ -809,8 +809,13 @@ var stuDb9_12_game = [
     "prize": 2
   },
   {
-    "name": "Sean Zheng (not on main list)",
-    "project": "Pygame",
+    "name": "David Tang",
+    "project": "3DTetris",
+    "prize": 2
+  },
+  {
+    "name": "Sean Zeng",
+    "project": "Kirby's Platformer",
     "prize": 2
   },
   {

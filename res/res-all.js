@@ -35,7 +35,6 @@ const dbList = {
 	'9-12-cyber': stuDb9_12_cyber,
 	'9-12-mobile': stuDb9_12_mobile,
 	'9-12-application': stuDb9_12_application
-
 }
 var stuDb = dbList[group]
 console.log(stuDb)
