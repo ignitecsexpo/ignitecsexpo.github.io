@@ -29,7 +29,7 @@ document.getElementById("statistic_table").innerHTML = statisticList[group]
 
 for(var i = 0; i < stuDb.length; i++) {
 	var student = stuDb[i];	
-	var spaceIndex = student.name.indexOf(" ");
+	var spaceIndex = student.name.lastIndexOf(" ");
 	var name = student.name.slice(0, spaceIndex + 2) + ".";
 	var projectTitle = student.project;
 	var award = awardList[student.prize];
@@ -37,5 +37,4 @@ for(var i = 0; i < stuDb.length; i++) {
 	document.getElementById(table).innerHTML += 
 		'<tr><td>' + name + '</td><td colspan="2">' + projectTitle + '</td><td>' + award + '</td></tr>';
 }
-
 //file:///Users/angli/workspace/ignitecsexpo.github.io/awards.html?group=4-6
