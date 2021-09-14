@@ -1,12 +1,85 @@
-var stuDB = [
+var stuDbk_3 = [
   {
-    "name": "Eric Zhang",
-    "project": "Flight searcher",
+    "name": "Ishaan Raj",
+    "project": "The Battle",
+    "prize": 0
+  },
+  {
+    "name": "Daniel Lu",
+    "project": "Duels Linking",
+    "prize": 1
+  },
+  {
+    "name": "Chengxuan (Sean) Han",
+    "project": "Dinosaur Adventure",
+    "prize": 1
+  },
+  {
+    "name": "Sam Huang",
+    "project": "The Marvelous Seven",
+    "prize": 2
+  },
+  {
+    "name": "Brandon Lu",
+    "project": "Scratch Maze",
+    "prize": 2
+  },
+  {
+    "name": "Danny Li",
+    "project": "Minecraft Maze Bot",
+    "prize": 2
+  },
+  {
+    "name": "Noah Xu",
+    "project": "Roblox Parkour",
+    "prize": 3
+  },
+  {
+    "name": "Alston Don",
+    "project": "Magic Blocks",
+    "prize": 3
+  },
+  {
+    "name": "Mia Liu",
+    "project": "Mars",
+    "prize": 3
+  },
+  {
+    "name": "Anthony Liu",
+    "project": "Pokedex",
+    "prize": 3
+  },
+  {
+    "name": "Michael ?",
+    "project": "Random Maze Generator",
+    "prize": 4
+  },
+  {
+    "name": "Kelvin He",
+    "project": "Journey to Venus",
+    "prize": 4
+  },
+  {
+    "name": "Chloe Shen",
+    "project": "Rocket Ship Soap",
+    "prize": 4
+  },
+  {
+    "name": "Hannah Banks",
+    "project": "Space Adventure",
+    "prize": 4
+  }
+]
+
+var stuDb4_6 = [
+  {
+    "name": "Zichen Zhang",
+    "project": "Air Ticket Search",
     "prize": 0
   },
   {
     "name": "Michael Zhao",
-    "project": "groupic app",
+    "project": "Groupic App",
     "prize": 1
   },
   {
@@ -16,7 +89,7 @@ var stuDB = [
   },
   {
     "name": "Yixuan Liu",
-    "project": "Python myths",
+    "project": "Python Myths",
     "prize": 1
   },
   {
@@ -150,21 +223,6 @@ var stuDB = [
     "prize": 3
   },
   {
-    "name": "Jordan Chen",
-    "project": "n/a (forgot to ask + bad audio). It was a game",
-    "prize": 3
-  },
-  {
-    "name": "Andrew Pendroy",
-    "project": "roblox gaming",
-    "prize": 3
-  },
-  {
-    "name": "Kevin Xie",
-    "project": "roblox gaming 2",
-    "prize": 3
-  },
-  {
     "name": "Boyu Cai",
     "project": "wingdings guesser",
     "prize": 3
@@ -180,13 +238,23 @@ var stuDB = [
     "prize": 3
   },
   {
-    "name": "Joshua Shang",
-    "project": "Click trainer",
+    "name": "Baichuan Ouyang",
+    "project": "Steller",
+    "prize": 3
+  },
+  {
+    "name": "Jordan Chen",
+    "project": "Roblox Skill Simulator",
     "prize": 4
   },
   {
-    "name": "Baichuan Ouyang",
-    "project": "Steller",
+    "name": "Andrew Pendroy",
+    "project": "Roblox Gaming",
+    "prize": 4
+  },
+  {
+    "name": "Joshua Shang",
+    "project": "Click trainer",
     "prize": 4
   },
   {
@@ -232,6 +300,31 @@ var stuDB = [
   {
     "name": "Darren Wang",
     "project": "robot thingy lo",
+    "prize": 4
+  },
+  {
+    "name": "Huma Felix",
+    "project": "Minecraft Fun",
+    "prize": 4
+  },
+  {
+    "name": "Ryan Traynor",
+    "project": "Flight Simulator",
+    "prize": 4
+  },
+  {
+    "name": "Martyn Cruz",
+    "project": "Fun Ride",
+    "prize": 4
+  },
+  {
+    "name": "Bonita Carson",
+    "project": "Rock Paper Scissors",
+    "prize": 4
+  },
+  {
+    "name": "Tylor Holland",
+    "project": "Final Days",
     "prize": 4
   }
 ]
