@@ -1,0 +1,66 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "ignitecsexpo.org"
+        }
+      ],
+      "destination": "https://igniteaiexpo.org/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.ignitecsexpo.org"
+        }
+      ],
+      "destination": "https://igniteaiexpo.org/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.igniteaiexpo.org"
+        }
+      ],
+      "destination": "https://igniteaiexpo.org/$1",
+      "permanent": true
+    },
+    {
+      "source": "/portal",
+      "destination": "/portal/",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/portal/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    },
+    {
+      "source": "/certificate.html",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ]
+}

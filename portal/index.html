@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Sign in — IgniteAI Expo Portal</title>
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../css/expo.css?v=p6" rel="stylesheet">
+    <link href="portal.css?v=p6" rel="stylesheet">
+</head>
+<body class="portal">
+
+<div class="auth">
+    <div class="auth-photo"><blockquote>Every project deserves a careful reader.</blockquote></div>
+
+    <div class="auth-form">
+        <a class="brand" href="../index.html"><span>Ignite<i>AI</i> Expo</span></a>
+
+        <!-- Sign in -->
+        <form id="v-login">
+            <h1>Portal sign in</h1>
+            <p>For Expo organizers and judges.</p>
+            <div class="auth-msg" id="login-msg"></div>
+            <div class="f"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div>
+            <div class="f"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+            <button class="pbtn primary" type="submit">Sign in</button>
+            <div class="auth-links"><a data-go="forgot">Forgot password, or signing in for the first time?</a></div>
+        </form>
+
+        <!-- Forgot / first-time -->
+        <form id="v-forgot" hidden>
+            <h1>Set your password</h1>
+            <p>Enter the email your organizer account uses. We'll send a link to choose a password.</p>
+            <div class="auth-msg" id="forgot-msg"></div>
+            <div class="f"><label for="femail">Email</label><input id="femail" type="email" required></div>
+            <button class="pbtn primary" type="submit">Email me a link</button>
+            <div class="auth-links"><a data-go="login">← Back to sign in</a></div>
+        </form>
+
+        <!-- New password (from recovery link, or after accepting an invite) -->
+        <form id="v-newpass" hidden>
+            <h1 id="np-title">Choose a password</h1>
+            <p id="np-sub">At least 8 characters.</p>
+            <div class="auth-msg" id="np-msg"></div>
+            <div class="f" id="np-name-f" hidden><label for="npname">Your name <i style="font-weight:400;color:var(--dim)">(shown on your reviews)</i></label><input id="npname" maxlength="100"></div>
+            <div class="f"><label for="np1">New password</label><input id="np1" type="password" autocomplete="new-password" minlength="8" required></div>
+            <div class="f"><label for="np2">Repeat password</label><input id="np2" type="password" autocomplete="new-password" minlength="8" required></div>
+            <button class="pbtn primary" type="submit">Save and continue</button>
+        </form>
+
+        <div id="v-wait" hidden><h1>One moment…</h1><p id="wait-msg">Checking your link.</p></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/appwrite@27.0.0/dist/iife/sdk.js"></script>
+<script src="common.js?v=p6"></script>
+<script>
+(function () {
+    'use strict';
+    var $ = EXPO.$, account = EXPO.account;
+    var qs = new URLSearchParams(location.search);
+    var here = location.origin + location.pathname;
+
+    function show(id) {
+        ['v-login', 'v-forgot', 'v-newpass', 'v-wait'].forEach(function (v) { $('#' + v).hidden = v !== id; });
+    }
+    function msg(id, text, ok) { var el = $('#' + id); el.textContent = text || ''; el.className = 'auth-msg' + (ok ? ' ok' : ''); }
+    function busy(form, on) { var b = form.querySelector('button'); b.disabled = on; }
+    function route() {
+        return EXPO.me().then(function (m) {
+            if (m.isAdmin) location.href = 'admin.html';
+            else if (m.isJudge) location.href = 'judge.html';
+            else { show('v-login'); msg('login-msg', 'This account has not been given portal access yet. Ask an Expo organizer to invite you.'); }
+        });
+    }
+
+    EXPO.$$('[data-go]').forEach(function (a) {
+        a.addEventListener('click', function () { show('v-' + a.getAttribute('data-go')); });
+    });
+
+    // ---- which screen? ----
+    var mode = 'login';
+    if (qs.get('membershipId') && qs.get('secret')) mode = 'invite';
+    else if (qs.get('userId') && qs.get('secret')) mode = 'recovery';
+
+    if (mode === 'invite') {
+        show('v-wait');
+        $('#wait-msg').textContent = 'Accepting your invitation…';
+        // An old session (someone else's) would make the accept call fail, so clear it first.
+        account.deleteSession({ sessionId: 'current' }).catch(function () {}).then(function () {
+            return EXPO.teams.updateMembershipStatus({
+                teamId: qs.get('teamId'), membershipId: qs.get('membershipId'),
+                userId: qs.get('userId'), secret: qs.get('secret')
+            });
+        }).then(function () {
+            history.replaceState(null, '', here);
+            return account.get();
+        }).then(function (user) {
+            $('#np-title').textContent = 'Welcome to the Expo portal';
+            $('#np-sub').textContent = 'Choose a password so you can sign in again later.';
+            $('#np-name-f').hidden = false;
+            $('#npname').value = user.name || '';
+            show('v-newpass');
+        }).catch(function (e) {
+            show('v-login');
+            msg('login-msg', 'That invitation link did not work (' + e.message + '). If you already accepted it, just sign in.');
+        });
+    } else if (mode === 'recovery') {
+        show('v-newpass');
+    } else {
+        if (qs.get('denied')) msg('login-msg', 'Your account does not have access to that page.');
+        account.get().then(function () { if (!qs.get('denied')) route(); }, function () {});
+    }
+
+    $('#v-login').addEventListener('submit', function (e) {
+        e.preventDefault(); busy(this, true); msg('login-msg', '');
+        var form = this;
+        account.deleteSession({ sessionId: 'current' }).catch(function () {}).then(function () {
+            return account.createEmailPasswordSession({ email: $('#email').value.trim(), password: $('#password').value });
+        }).then(route).catch(function (err) {
+            msg('login-msg', err.message);
+        }).then(function () { busy(form, false); });
+    });
+
+    $('#v-forgot').addEventListener('submit', function (e) {
+        e.preventDefault(); busy(this, true); msg('forgot-msg', '');
+        var form = this;
+        account.createRecovery({ email: $('#femail').value.trim(), url: here }).then(function () {
+            msg('forgot-msg', 'If that email has a portal account, a link is on its way. It is valid for one hour.', true);
+        }, function (err) { msg('forgot-msg', err.message); }).then(function () { busy(form, false); });
+    });
+
+    $('#v-newpass').addEventListener('submit', function (e) {
+        e.preventDefault(); msg('np-msg', '');
+        var p1 = $('#np1').value, form = this;
+        if (p1.length < 8) return msg('np-msg', 'Use at least 8 characters.');
+        if (p1 !== $('#np2').value) return msg('np-msg', 'The two passwords do not match.');
+        busy(form, true);
+        var job;
+        if (mode === 'recovery') {
+            job = account.updateRecovery({ userId: qs.get('userId'), secret: qs.get('secret'), password: p1 }).then(function () {
+                history.replaceState(null, '', here);
+                mode = 'login'; show('v-login');
+                msg('login-msg', 'Password saved. Sign in with it now.', true);
+            });
+        } else {
+            var name = $('#npname').value.trim();
+            job = account.updatePassword({ password: p1 })
+                .then(function () { return name ? account.updateName({ name: name }) : null; })
+                .then(route);
+        }
+        job.catch(function (err) { msg('np-msg', err.message); }).then(function () { busy(form, false); });
+    });
+})();
+</script>
+</body>
+</html>

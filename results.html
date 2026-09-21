@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Award winners of IgniteAI Expo, the international K–12 AI + X innovation showcase.">
+    <title>Results — IgniteAI Expo</title>
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="css/expo.css?v=2026k" rel="stylesheet">
+</head>
+<body id="top">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mark" viewBox="0 0 40 40">
+<path d="M20 1.5 36 10.75v18.5L20 38.5 4 29.25v-18.5z" fill="#e4472b"/>
+<path d="M26.6 12.2c-4.6.3-8.2 2.6-10.4 6.6l-3 .5-1.9 2.9 3.4.3 2.8 2.8.3 3.4 2.9-1.9.5-3c4-2.2 6.3-5.8 6.6-10.4a1.1 1.1 0 0 0-1.2-1.2zm-3.3 6.4a1.7 1.7 0 1 1 0-3.4 1.7 1.7 0 0 1 0 3.4zM13.2 25.1c-1.3.4-2 1.9-2.2 3.900 2-.2 3.500-.9 3.900-2.200z" fill="#fff"/>
+</symbol></defs></svg>
+<nav class="nav scrolled" aria-label="Main"><div class="wrap nav-inner">
+    <a class="brand" href="index.html"><svg class="brand-mark"><use href="#mark"/></svg><span>Ignite<i>AI</i> Expo</span></a>
+    <div class="nav-simple"><a href="index.html">← Back to site</a></div>
+</div></nav>
+
+<header class="reg-hero"><div class="wrap">
+    <span class="eyebrow" id="res-event">IgniteAI Expo</span>
+    <h1>The <em class="hl">results</em>.</h1>
+    <p id="res-sub">Loading…</p>
+    <p id="res-other" style="font-size:14.5px"></p>
+</div></header>
+<main class="wrap" style="padding-bottom:110px">
+    <div class="toolbar-pub" id="res-tabs" hidden></div>
+    <div id="res-body"></div>
+</main>
+<style>
+.toolbar-pub { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+.toolbar-pub button { font: inherit; font-weight: 600; font-size: 14.5px; padding: 10px 18px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--white); cursor: pointer; }
+.toolbar-pub button.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.res-track { margin-bottom: 46px; }
+.res-track h2 { font-size: 30px; padding-bottom: 12px; border-bottom: 1.5px solid var(--ink); }
+.res-row { display: grid; grid-template-columns: 250px 1fr; gap: 6px 24px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.res-row .aw { font-family: var(--display); font-style: italic; font-size: 20px; color: var(--accent); }
+.res-row h3 { font-size: 17.5px; }
+.res-row p { color: var(--muted); font-size: 14.5px; margin: 2px 0 0; }
+@media (max-width: 640px) { .res-row { grid-template-columns: 1fr; } }
+</style>
+
+<footer class="footer"><div class="wrap"><div class="footer-bottom" style="margin-top:0">Questions? <a class="mail" href="mailto:ignite@cpp.edu">ignite@cpp.edu</a> · Copyright © 2026 IgniteAI Expo, formerly the IgniteCS Programming Expo.</div></div></footer>
+
+<script>
+(function () {
+    var ENDPOINT = 'https://sfo.cloud.appwrite.io/v1', PROJECT = '6aae02ba003620a19dd0';
+    var DIVS = ['K-3', '4-6', '7-8', '9-12'];
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    var sub = document.getElementById('res-sub'), body = document.getElementById('res-body'), tabs = document.getElementById('res-tabs');
+    var all = [];
+
+    var wanted = new URLSearchParams(location.search).get('season'), season = null;
+    function get(table, queries) {
+        var url = ENDPOINT + '/tablesdb/expo/tables/' + table + '/rows?' + queries.map(function (x) { return 'queries[]=' + encodeURIComponent(JSON.stringify(x)); }).join('&');
+        return fetch(url, { headers: { 'X-Appwrite-Project': PROJECT } }).then(function (r) { return r.json(); }).then(function (r) { if (!r.rows) throw new Error(r.message || 'failed'); return r.rows; });
+    }
+    function findSeason() {
+        return get('seasons', [{ method: 'orderDesc', attribute: 'year' }, { method: 'limit', values: [50] }]).then(function (list) {
+            season = list.filter(function (x) { return x.$id === wanted; })[0] || list.filter(function (x) { return x.isCurrent; })[0] || list[0];
+            if (!season) throw new Error('no season');
+            document.title = 'Results — ' + season.name;
+            document.getElementById('res-event').textContent = season.name;
+            var past = list.filter(function (x) { return x.$id !== season.$id; });
+            if (past.length) document.getElementById('res-other').innerHTML = 'Other years: ' + past.map(function (x) { return '<a href="?season=' + encodeURIComponent(x.$id) + '" style="text-decoration:underline">' + esc(x.name) + '</a>'; }).join(' · ');
+        });
+    }
+    function page(cursor) {
+        var q = [{ method: 'equal', attribute: 'season', values: [season.$id] }, { method: 'limit', values: [100] }];
+        if (cursor) q.push({ method: 'cursorAfter', values: [cursor] });
+        return get('results', q).then(function (rows) {
+            all = all.concat(rows);
+            return rows.length === 100 ? page(rows[99].$id) : all;
+        });
+    }
+    function show(div) {
+        Array.prototype.forEach.call(tabs.children, function (b) { b.classList.toggle('on', b.getAttribute('data-d') === div); });
+        var rows = all.filter(function (r) { return r.division === div; }), tracks = {};
+        rows.forEach(function (r) { (tracks[r.track] = tracks[r.track] || []).push(r); });
+        body.innerHTML = Object.keys(tracks).sort().map(function (t) {
+            return '<section class="res-track"><h2>' + esc(t) + '</h2>' + tracks[t].sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); }).map(function (r) {
+                return '<div class="res-row"><div class="aw">' + esc(r.award) + '</div><div><h3>' + esc(r.title) + '</h3>' + (r.students ? '<p>' + esc(r.students) + (r.country ? ' · ' + esc(r.country) : '') + '</p>' : '') + '</div></div>';
+            }).join('') + '</section>';
+        }).join('');
+    }
+    findSeason().then(function () { return page(null); }).then(function () {
+        if (!all.length) { sub.textContent = 'Winners of ' + season.name + ' will be announced here.'; return; }
+        sub.textContent = 'Congratulations to every student who presented this year.';
+        var present = DIVS.filter(function (d) { return all.some(function (r) { return r.division === d; }); });
+        tabs.innerHTML = present.map(function (d) { return '<button data-d="' + d + '">Grade ' + d.replace('-', '–') + '</button>'; }).join('');
+        tabs.hidden = false;
+        Array.prototype.forEach.call(tabs.children, function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-d')); }); });
+        show(present[0]);
+    }).catch(function () { sub.textContent = 'Winners will be announced here.'; });
+})();
+</script>
+</body>
+</html>

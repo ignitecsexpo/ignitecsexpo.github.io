@@ -1,1193 +1,515 @@
 <!DOCTYPE html>
 <html lang="en">
-<!--
-
-Page    : index / Gather
-Version : 1.0
-Author  : Surjith S M
-URI     : http://themeforest.net/user/surjithctly
-
-Copyright © All rights Reserved
-Surjith S M / @surjithctly
-
- -->
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- SEO -->
-    <meta name="author" content="Surjith S M">
-    <meta name="description" content="Gather is a responsive Template for Events, Meetups, Conference and other gatherings.">
-    <meta name="keywords" content="gather, responsive, event, meetup, template, conference, gather, rsvp, download">
+    <title>IgniteAI Expo 2026 — International K–12 AI + X Innovation Showcase</title>
+    <meta name="description" content="IgniteAI Expo (formerly the IgniteCS Programming Expo) is an international online showcase where K–12 students use AI to take on problems in any field — health, climate, art, business, science and beyond. Applications due September 27, 2026.">
+    <meta name="keywords" content="IgniteAI, IgniteCS, AI competition, K-12, student innovation, AI + X, interdisciplinary, international student competition">
 
-    <!-- Favicons -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://igniteaiexpo.org/">
+    <meta property="og:title" content="IgniteAI Expo 2026 — AI + X">
+    <meta property="og:description" content="An international online showcase for K–12 innovators. Bring your passion, add AI, and show the world what you built. Apply by September 27, 2026.">
+    <meta property="og:image" content="https://igniteaiexpo.org/images/2026/hero-1.jpg">
+    <meta name="theme-color" content="#faf7f1">
+
     <link rel="shortcut icon" href="images/favicon.ico">
 
-    <!-- Page Title -->
-    <title>IgniteCS Programming Expo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom Google Font : Open Sans & Montserrat -->
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,600' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-
-    <!-- Plugins -->
-    <link href="css/plugins/animate.css" rel="stylesheet">
-    <link href="css/plugins/slick.css" rel="stylesheet">
-    <link href="css/plugins/magnific-popup.css" rel="stylesheet">
-    <link href="css/plugins/font-awesome.css" rel="stylesheet">
-    <link href="css/plugins/streamline-icons.css" rel="stylesheet">
-
-    <!-- Event Style -->
-    <link href="css/event.css" rel="stylesheet">
-
-    <!-- Color Theme -->
-    <!-- Options: green, purple, red, yellow, mint, blue, black  -->
-    <link href="css/themes/red.css" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="js/ie/respond.min.js"></script>
-    <![endif]-->
-
-    <!-- Modernizr -->
-    <script src="js/modernizr.min.js"></script>
-    <!-- Subtle Loading bar -->
-    <script src="js/plugins/pace.js"></script>
+    <link href="css/expo.css?v=2026k" rel="stylesheet">
 </head>
 
-<body class="animate-page" data-spy="scroll" data-target="#navbar" data-offset="100">
-<!--Preloader div-->
-<div class="preloader"></div>
+<body id="top">
 
-<!-- Fixed navbar -->
-<nav class="navbar navbar-default navbar-fixed-top reveal-menu js-reveal-menu reveal-menu-hidden">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">igniteCS Programming Expo</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="active"><a href="#top">Home</a></li>
-                <li><a href="#schedule">Schedule</a></li>
-                <li class="dropdown">
-                    <a href="#rules" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Rules<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#eligibility">Eligibility</a></li>
-                        <li><a href="#acceptance">Acceptance Criteria</a></li>
-                        <li><a href="#demo-reg">Demo Regulations</a></li>
-                        <li><a href="#qualified">Qualified Projects</a></li>
-                    </ul>
-                </li>
-                <li><a href="#awards">Awards</a></li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#sponsors">Sponsors</a></li>
-                <li><a href="#contact">Contact</a></li>
+<!-- Brand mark, reused in nav and footer -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <symbol id="mark" viewBox="0 0 40 40">
+            <path d="M20 1.5 36 10.75v18.5L20 38.5 4 29.25v-18.5z" fill="#e4472b"/>
+            <path d="M26.6 12.2c-4.6.3-8.2 2.6-10.4 6.6l-3 .5-1.9 2.9 3.4.3 2.8 2.8.3 3.4 2.9-1.9.5-3c4-2.2 6.3-5.8 6.6-10.4a1.1 1.1 0 0 0-1.2-1.2zm-3.300 6.400a1.700 1.700 0 1 1 0-3.400 1.700 1.700 0 0 1 0 3.400zM13.200 25.100c-1.300.4-2 1.900-2.200 3.900 2-.2 3.500-.9 3.900-2.200z" fill="#fff"/>
+        </symbol>
+    </defs>
+</svg>
 
-            </ul>
+<!--
+ Navigation
+ ====================================== -->
+<nav class="nav" aria-label="Main">
+    <div class="wrap nav-inner">
+        <a class="brand" href="#top">
+            <svg class="brand-mark"><use href="#mark"/></svg>
+            <span>Ignite<i>AI</i> Expo</span>
+        </a>
+        <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links">
+            <a href="#name">Why IgniteAI</a>
+            <a href="#ai-x">AI + X</a>
+            <a href="#tracks">Tracks</a>
+            <a href="#timeline">Timeline</a>
+            <a href="#awards">Awards</a>
+            <a href="#rules">Rules</a>
+            <a href="#gallery">Gallery</a>
+            <a class="btn btn-primary btn-sm js-apply" href="#apply">Apply now <span class="arrow">→</span></a>
         </div>
-        <!--/.nav-collapse -->
     </div>
 </nav>
-<!-- // End Fixed navbar -->
 
-<header id="top" class="header">
-    <div class="container">
+<!--
+ Hero
+ ====================================== -->
+<header class="hero">
+    <div class="wrap">
+        <div class="hero-grid">
+            <div>
+                <span class="pill" id="status-pill"><span class="dot"></span><span id="status-text">2026 applications open · Due September 27</span></span>
 
-        <div class="header_top-bg">
-            <div class="logo">
-                <a href="#"><img src="images/expo-logo.png" alt="event-logo"></a>
+                <h1>
+                    <span class="line">What will you</span>
+                    <span class="line">build with</span>
+                    <span class="line">AI + <span class="rot-wrap"><span id="rot">Medicine</span></span>?</span>
+                </h1>
+
+                <p class="lede">The international online showcase for K–12 innovators. Bring what you love. Add AI. Show the world.</p>
+
+                <div class="hero-cta">
+                    <a class="btn btn-primary js-apply" href="#apply">Submit your project <span class="arrow">→</span></a>
+                    <a class="btn btn-ghost" href="#ai-x">See the 2026 theme</a>
+                </div>
+
+                <ul class="hero-facts">
+                    <li>Online, open worldwide</li>
+                    <li>Grades K–12</li>
+                    <li>Solo or teams of up to 5</li>
+                </ul>
+            </div>
+
+            <div class="collage">
+                <img class="c1" src="images/2026/hero-1.jpg" alt="Two students laugh over a laptop and a home-built prototype">
+                <img class="c2" src="images/2026/hero-2.jpg" alt="A student demonstrates her project over a video call">
+                <img class="c3" src="images/pic1.jpg" alt="Students presenting to a judge at a past Expo">
+                <div class="stamp"><div>AI + X<small>2026</small></div></div>
             </div>
         </div>
 
-        <h3 class="headline-support wow fadeInDown">A CREATIVE EXPO</h3>
-        <h1 class="headline wow fadeInDown" data-wow-delay="0.1s">INSPIRE. CODING. CREATE. </h1>
-
-        <div class="when_where wow fadeIn" data-wow-delay="0.4s">
-            <!-- <p class="event_where"><strong>Now being held online!</strong></p> -->
-            <!-- <p class="event_when">Project Submission Open </p> -->
-            <!-- <p class="event_when">Final Interview at 9:30am, September 24th, 2023</p> -->
-            <p>Registration is now closed. Thank you for participating!</p>
-            <p><strong>Award Announcement: Wednesday, October 1st at 8:00 PM PST</strong></p>
-            <!-- <p>Please join your grade level Zoom between 9:30AM - 11:30AM on 9/28/2025</p> -->
-            <!-- <p>Submission due at 11:59pm, September 22nd, 2025</p> -->
-            <!-- <p>Finalists Selection: April 26, 2021</p> -->
-            <!-- <a class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s" href="https://cppapcsa.wufoo.com/forms/rimsspg13l2p5p/" target="_blank">Submit Now!</a> -->
-            <!-- <a class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s" href="https://zoom.us/j/87190841116" target="_blank">Junior Level (K-8)</a>
-            <a class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s" href="https://zoom.us/j/86567702318" target="_blank">Senior Level (9-12)</a> -->
+        <div class="deadline">
+            <div>
+                <div class="deadline-label" id="deadline-label">Applications close in</div>
+                <div class="deadline-date" id="deadline-date">Sunday, September 27, 2026 · 11:59 PM PT</div>
+                <div class="deadline-local" id="deadline-local" data-iso="2026-09-28T06:59:00Z"></div>
+            </div>
+            <ul class="countdown" id="countdown">
+                <li><span class="days">00</span><em>days</em></li>
+                <li><span class="hours">00</span><em>hours</em></li>
+                <li><span class="minutes">00</span><em>min</em></li>
+                <li><span class="seconds">00</span><em>sec</em></li>
+            </ul>
         </div>
-
-        
-
-        <!-- <h2 class="headline wow fadeInDown" data-wow-delay="0.1s">Thank You for Joining! See You Next Year!</h3> -->
-        <!-- <p>Zoom ID: (K-3) 88594154049 | (4-6) 83728065279 | (7-8) 83169625745 | (9-12) 87275249153</p> -->
-        <!-- <h3 class="headline wow fadeInDown" data-wow-delay="0.1s"><u>Check Winners Below</u></h1>
-        <p class="event_when">The result will be coming and kept updated from 6pm 9/13/2021.</p>
-        <div class="header_bottom-bg">
-            <a class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s" href="awards.html?group=k-3" target="_blank">Winners (K-3) Published!</a>
-            <a class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s" href="awards.html?group=4-6" target="_blank">Winners (4-6) Published! </a>
-            <a style="margin-top: 15px;" class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s"  target="_blank" href="awards.html?group=7-8">Winners (7-8) Published!</a>
-            <a  style="margin-top: 15px;" class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s"  target="_blank" href="awards.html?group=9-12-ai">Winners (9-12 Algorithm, AI & Data Science) Published!</a> 
-            <a style="margin-top: 15px;" class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s"  target="_blank" href="awards.html?group=9-12-application">Winners (9-12 Systems and Applications) Published!</a> 
-            <a style="margin-top: 15px;" class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s"  target="_blank" href="awards.html?group=9-12-cyber">Winners (9-12 Cyber Security, Robotics & Hardware) Published!</a> 
-            <a style="margin-top: 15px;" class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s"  target="_blank" href="awards.html?group=9-12-mobile">Winners (9-12 Mobile and Web) Published!</a> 
-            <a style="margin-top: 15px;" class="btn btn-default btn-xl wow zoomIn" data-wow-delay="0.3s"  target="_blank" href="awards.html?group=9-12-game">Winners (9-12 Game Development) Published!</a> 
-        </div>-->
     </div>
-    <!-- end .container -->
 </header>
-<!-- end .header -->
 
 <!--
- Highlight Section
+ Why the new name
  ====================================== -->
+<section class="section" id="name" style="padding-top:36px">
+    <div class="wrap">
+        <div class="split reveal">
+            <div>
+                <span class="eyebrow">A new name for 2026</span>
+                <div class="renamed"><s>IgniteCS</s><span class="to">→</span><span>Ignite<em class="hl">AI</em></span></div>
+                <div class="body">
+                    <p>When this Expo began, learning to code was the way into technology. That has changed. AI now writes much of the code — so the hard part, and the exciting part, is <strong>knowing which problem is worth solving</strong>, and understanding it well enough to solve it.</p>
+                    <p>Today biologists, musicians, designers and founders build with AI right alongside programmers. Our name now says so. Same Expo, same standards, same community — <strong>open to every kind of builder.</strong></p>
+                </div>
+            </div>
+            <div class="split-photo"><img src="images/2026/hero-3.jpg" alt="A young student builds a block-coding project on a tablet at home" loading="lazy"></div>
+        </div>
 
+        <ul class="stats reveal" style="margin-top:72px">
+            <li><b>K–12</b><span>Four grade divisions</span></li>
+            <li><b>10</b><span>Project tracks</span></li>
+            <li><b>International</b><span>Online, open to students anywhere</span></li>
+            <li><b>Live</b><span>Demo to a judging panel</span></li>
+        </ul>
+    </div>
+</section>
 
+<!--
+ 2026 Theme : AI + X
+ ====================================== -->
+<section class="section alt" id="ai-x">
+    <div class="wrap">
+        <div class="section-head reveal">
+            <span class="eyebrow">The 2026 Spotlight</span>
+            <h2>AI + <em class="hl">X</em>, where X is whatever you love.</h2>
+            <p>You don't need to call yourself a coder. Start with a field you care about, and use AI as your tool.</p>
+        </div>
 
-<section class="highlight">
-
-    <div class="container">
-        <p class="lead text-center">The IgniteCS Programming Expo is an event that allows students from K-12 to show off their programming skills with creativity. From robotics, to mobile and web development, to AI and cyber security, any project that involves coding can participate. The event will now be held online, and the deadline for applications is September 22, 2025.</p>
-
-        <div class="countdown_wrap">
-
-            <h6 class="countdown_title text-center">SUBMISSION WILL END IN</h6>
-
-            <!-- Countdown JS for the Event Date Starts here.
-TIP: You can change your event time below in the Same Format.  -->
-
-            <ul id="countdown" data-event-date="22 September 2025 11:59:00">
-                <li class="wow zoomIn" data-wow-delay="0s"> <span class="days">00</span>
-                    <p class="timeRefDays">days</p>
-                </li>
-                <li class="wow zoomIn" data-wow-delay="0.2s"> <span class="hours">00</span>
-                    <p class="timeRefHours">hours</p>
-                </li>
-                <li class="wow zoomIn" data-wow-delay="0.4s"> <span class="minutes">00</span>
-                    <p class="timeRefMinutes">minutes</p>
-                </li>
-                <li class="wow zoomIn" data-wow-delay="0.6s"> <span class="seconds">00</span>
-                    <p class="timeRefSeconds">seconds</p>
-                </li>
-            </ul>
+        <div class="x-grid">
+            <article class="x-card reveal">
+                <div class="ph"><img src="images/2026/x-health.jpg" alt="A teenager fits a home-built wrist sensor on his grandmother" loading="lazy"></div>
+                <h3>AI <span>+</span> Health</h3>
+                <p>A wearable that watches over Grandma.</p>
+            </article>
+            <article class="x-card reveal">
+                <div class="ph"><img src="images/2026/x-environment.jpg" alt="A student straps a camera box to a tree in a forest" loading="lazy"></div>
+                <h3>AI <span>+</span> Environment</h3>
+                <p>Trail cameras that recognize wildlife.</p>
+            </article>
+            <article class="x-card reveal">
+                <div class="ph"><img src="images/2026/x-arts.jpg" alt="A student plays a keyboard connected to a laptop" loading="lazy"></div>
+                <h3>AI <span>+</span> Arts &amp; Music</h3>
+                <p>A duet between you and a model.</p>
+            </article>
+            <article class="x-card reveal">
+                <div class="ph"><img src="images/2026/x-business.jpg" alt="A student shows a bakery owner something on a tablet" loading="lazy"></div>
+                <h3>AI <span>+</span> Business</h3>
+                <p>Demand forecasts for the family bakery.</p>
+            </article>
+            <article class="x-card reveal">
+                <div class="ph"><img src="images/2026/x-science.jpg" alt="A student adjusts a telescope at dusk beside a laptop" loading="lazy"></div>
+                <h3>AI <span>+</span> Science</h3>
+                <p>Classifying galaxies from the backyard.</p>
+            </article>
+            <article class="x-card reveal">
+                <div class="ph"><img src="images/2026/x-education.jpg" alt="A teenager tutors a younger child with a tablet in a library" loading="lazy"></div>
+                <h3>AI <span>+</span> Education</h3>
+                <p>A reading tutor for a younger sibling.</p>
+            </article>
+            <article class="x-card reveal">
+                <div class="ph"><img src="images/2026/x-humanities.jpg" alt="A student photographs an old handwritten letter in an archive" loading="lazy"></div>
+                <h3>AI <span>+</span> Humanities</h3>
+                <p>Century-old letters, made searchable.</p>
+            </article>
+            <article class="x-card reveal">
+                <div class="ph"><img src="images/2026/x-community.jpg" alt="Students sort donation boxes at a food bank with a tablet" loading="lazy"></div>
+                <h3>AI <span>+</span> Community</h3>
+                <p>Smarter logistics for a food bank.</p>
+            </article>
         </div>
     </div>
-    <!-- end .container -->
-
 </section>
-<!-- end section.highlight -->
 
-<section class="awards">
-    <div class="container">
-        <div class="section-title wow fadeInUp">
-            <h3>About Google IgniteCS</h3>
-            <hr>
-        </div>
-        <div class="row">
-            <div style="text-align: center;" class="col-md-2">
-
-            </div>
-            <div class="col-md-8">                         
-                <img style="width: 100%; height: auto;" src="https://images.squarespace-cdn.com/content/v1/57a2d102893fc0ca1fad85f0/1495397549506-AFYRPWK98TBM01VF0ZIV/igniteCS+logo.png"/>
-            </div>            
-        </div>        
-        <p></p>
-        <p></p>
-        <div class="row">                        
-            <div class="col-md-12">                
-                <p>Google's IgniteCS Program, founded in 2015, is an initiative aimed at promoting computer science (CS) education among K-12 students, particularly in underrepresented communities. It connects university students and volunteers with local schools to mentor younger students and teach them foundational CS concepts through hands-on activities and projects. The program emphasizes collaboration, problem-solving, and coding skills while fostering interest in technology fields. IgniteCS has had a significant impact by empowering students with critical tech skills, increasing diversity in CS education, and inspiring the next generation of computer scientists.</p>
-            </div>
-        </div>
-    </div>    
-</section>
 <!--
- Our Schedule
+ Tracks (Qualified Projects)
  ====================================== -->
-
-<section class="schedule" id="schedule">
-
-    <div class="container">
-        <div class="section-title wow fadeInUp">
-            <h4>THE SCHEDULE</h4>
-            <hr>
+<section class="section" id="tracks">
+    <div class="wrap">
+        <div class="section-head reveal">
+            <span class="eyebrow">Project Tracks</span>
+            <h2>Ten tracks. One rule: build something real.</h2>
+            <p>AI + X projects are welcome in every track.</p>
         </div>
 
-        <!-- <div class="nav-center">
-            <ul class="nav nav-pills" role="tablist" id="schedule-tabs">
-                <li role="presentation" class="active"><a href="#" aria-controls="day1" role="tab" data-toggle="tab">April 26, 2020</a></li>                
-            </ul>
-        </div> -->
+        <div class="track-grid">
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-ai.jpg" alt="" loading="lazy"><span class="tag">2026 Spotlight</span></div>
+                <h3>Artificial Intelligence</h3>
+                <p>Machine learning, generative AI, LLMs, computer vision, agents</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-data.jpg" alt="" loading="lazy"></div>
+                <h3>Data Science</h3>
+                <p>Analysis, visualization, data-driven apps</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-business.jpg" alt="" loading="lazy"></div>
+                <h3>Business &amp; Entrepreneurship</h3>
+                <p>Startups, fintech, e-commerce, market tools</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-game.jpg" alt="" loading="lazy"></div>
+                <h3>Game &amp; Animation</h3>
+                <p>2D / 3D, mobile and web games, animation</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-robotics.jpg" alt="" loading="lazy"></div>
+                <h3>Robotics</h3>
+                <p>Robots that take on real problems</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-hardware.jpg" alt="" loading="lazy"></div>
+                <h3>Hardware &amp; Electronics</h3>
+                <p>Smart devices and embedded systems</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-mobile.jpg" alt="" loading="lazy"></div>
+                <h3>Mobile &amp; Web</h3>
+                <p>Apps, websites and web services</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-algorithms.jpg" alt="" loading="lazy"></div>
+                <h3>Algorithms</h3>
+                <p>Algorithm design, language innovation, computational models</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-cyber.jpg" alt="" loading="lazy"></div>
+                <h3>Cyber Security</h3>
+                <p>Privacy, cryptology, attack and defense</p>
+            </article>
+            <article class="track reveal">
+                <div class="ph"><img src="images/2026/t-software.jpg" alt="" loading="lazy"></div>
+                <h3>Software &amp; Systems</h3>
+                <p>Anything else you've built</p>
+            </article>
+        </div>
+    </div>
+</section>
 
-        <!-- Tab panes -->
-        <!-- <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="day1">                
-                <section class="timeline">
-                    <div class="timeline-block">
-                        <div class="timeline-bullet wow zoomIn" data-wow-delay="0s">
-                        </div>
-                        <div class="timeline-content">
-                            <h2 class="wow flipInX" data-wow-delay="0.3s"> Judging Review and Select Finalists</h2>
-                            <span class="date wow flipInX" data-wow-delay="0.3s">All Day</span>
-                        </div>
-                    </div>                    
-                </section>                
-            </div> -->
+<!--
+ Timeline
+ ====================================== -->
+<section class="section alt" id="timeline">
+    <div class="wrap">
+        <div class="section-head reveal">
+            <span class="eyebrow">2026 Timeline</span>
+            <h2>Three dates to remember.</h2>
+            <p>Everything happens online, in Pacific Time.</p>
+        </div>
 
-            <div class="nav-center">
-                <!-- Nav tabs -->
-    			<ul class="nav nav-pills" role="tablist" id="schedule-tabs">
-    				<li role="presentation" class="active"><a href="#" aria-controls="day2" role="tab" data-toggle="tab">September 22, 2025</a></li>
-    			</ul>
-    		</div>
-            <section class="timeline">
-            <div class="timeline-block">
-                        <div class="timeline-bullet wow zoomIn" data-wow-delay="0s">
+        <div class="timeline reveal">
+            <div class="tl-step">
+                <div class="tl-day">Sunday</div>
+                <div class="tl-date">September 27</div>
+                <h3>Applications due</h3>
+                <span class="tl-time">11:59 PM PT</span>
+                <span class="tl-local" data-iso="2026-09-28T06:59:00Z"></span>
+            </div>
+            <div class="tl-step">
+                <div class="tl-day">Sunday</div>
+                <div class="tl-date">October 4</div>
+                <h3>Final interviews on Zoom</h3>
+                <span class="tl-time">9:30 – 11:30 AM PT · check-in 9:30</span>
+                <span class="tl-local" data-iso="2026-10-04T16:30:00Z"></span>
+            </div>
+            <div class="tl-step">
+                <div class="tl-day">Friday</div>
+                <div class="tl-date">October 9</div>
+                <h3>Award announcement</h3>
+                <span class="tl-time">Announced online</span>
+            </div>
+        </div>
+    </div>
+</section>
 
-                        </div>
-                        <!-- timeline-bullet -->
+<!--
+ Judging (Project Criteria)
+ ====================================== -->
+<section class="section" id="judging">
+    <div class="wrap">
+        <div class="split flip reveal">
+            <div>
+                <span class="eyebrow">Judging</span>
+                <h2>What the judges look for.</h2>
+                <ol class="crit-list">
+                    <li><div><h3>A live, working demo</h3><p>Live, not a video — but keep a video as backup.</p></div></li>
+                    <li><div><h3>You know how it works</h3><p>Explain how you built it, step by step.</p></div></li>
+                    <li><div><h3>It's useful</h3><p>Be ready for: "What can we do with this?"</p></div></li>
+                    <li><div><h3>It makes us say "wow"</h3><p>Imagination counts.</p></div></li>
+                </ol>
+                <p class="ai-note"><strong>Using AI tools?</strong> Welcome. Tell the judges what you used, and be ready to explain every part yourself.</p>
+            </div>
+            <div class="split-photo"><img src="images/2026/judging.jpg" alt="A student demonstrates a robot arm to judges on a video call" loading="lazy"></div>
+        </div>
+    </div>
+</section>
 
-                        <div class="timeline-content">
-                            <h2 class="wow flipInX" data-wow-delay="0.3s">Project Submission</h2>
-                            <span class="date wow flipInX" data-wow-delay="0.3s">11:59PM</span>
-                        </div>
-                        <!-- timeline-content -->
-                    </div>
-            </div>          
-            </section>
+<!--
+ Divisions + Awards
+ ====================================== -->
+<section class="section alt" id="awards">
+    <div class="wrap">
+        <div class="two-col">
+            <div class="reveal">
+                <span class="eyebrow">Grade Divisions</span>
+                <div class="split"><h2 style="grid-column:1/-1">Compete with your peers.</h2></div>
+                <div class="divisions">
+                    <div class="division"><b>K–3</b><span>Primary</span></div>
+                    <div class="division"><b>4–6</b><span>Elementary</span></div>
+                    <div class="division"><b>7–8</b><span>Middle</span></div>
+                    <div class="division"><b>9–12</b><span>Senior</span></div>
+                </div>
+            </div>
 
-            <!-- <div class="nav-center">
-                
-                <ul class="nav nav-pills" role="tablist" id="schedule-tabs">
-                    <li role="presentation" class="active"><a href="#" aria-controls="day2" role="tab" data-toggle="tab">September 17, 2022</a></li>
+            <div class="reveal">
+                <span class="eyebrow">Awards</span>
+                <ul class="award-list">
+                    <li>
+                        <h3>Category Awards</h3>
+                        <p>First through Fifth Place in every track and division, plus Innovative Project, Best Teamwork and Distinguished Ideas.</p>
+                    </li>
+                    <li>
+                        <h3>People's Choice</h3>
+                        <p>Every participant votes for three other projects.</p>
+                    </li>
+                    <li>
+                        <h3>Project of the Year</h3>
+                        <p>The best of the first-place projects in each division.</p>
+                    </li>
                 </ul>
-            </div> -->
-            <!-- <div role="tabpanel" class="tab-pane active" id="day2">                
-                <section class="timeline"> -->
-                    <!-- <div class="timeline-block">
-                        <div class="timeline-bullet wow zoomIn" data-wow-delay="0s">
-
-                        </div>                        
-
-                        <div class="timeline-content">
-                            <h2 class="wow flipInX" data-wow-delay="0.3s"> Check-In</h2>
-                            <span class="date wow flipInX" data-wow-delay="0.3s">9:30AM</span>
-                        </div>
-                        
-                    </div> -->
-                    <!-- timeline-block -->
-
-                    <!-- <div class="timeline-block">
-                        <div class="timeline-bullet wow zoomIn" data-wow-delay="0s">
-
-                        </div>
-                        
-
-                        <div class="timeline-content">
-                            <h2 class="wow flipInX" data-wow-delay="0.3s"> Semi-Final Interviews</h2>
-                            <span class="date wow flipInX" data-wow-delay="0.3s">9:30 - 11:30AM</span>
-                        </div>
-                        
-                    </div>                     -->
-                    <!-- </section>
-                </div> -->
-
-                <div class="nav-center">
-                <!-- Nav tabs -->
-                <ul class="nav nav-pills" role="tablist" id="schedule-tabs">
-                    <li role="presentation" class="active"><a href="#" aria-controls="day2" role="tab" data-toggle="tab">September 28, 2025</a></li>
-                </ul>
             </div>
-            <div role="tabpanel" class="tab-pane active" id="day2">
-                <!-- ########## Schedule Timeline DAY 02 Starts ########### -->
-                <section class="timeline">
-                    <div class="timeline-block">
-                        <div class="timeline-bullet wow zoomIn" data-wow-delay="0s">
-
-                        </div>
-                        <!-- timeline-bullet -->
-
-                        <div class="timeline-content">
-                            <h2 class="wow flipInX" data-wow-delay="0.3s"> Check-In</h2>
-                            <span class="date wow flipInX" data-wow-delay="0.3s">9:30AM</span>
-                        </div>
-                        <!-- timeline-content -->
-                    </div>
-                    <!-- timeline-block -->
-
-                    <div class="timeline-block">
-                        <div class="timeline-bullet wow zoomIn" data-wow-delay="0s">
-
-                        </div>
-                        <!-- timeline-bullet -->
-
-                        <div class="timeline-content">
-                            <h2 class="wow flipInX" data-wow-delay="0.3s"> Final Interviews</h2>
-                            <span class="date wow flipInX" data-wow-delay="0.3s">9:30 - 11:30AM</span>
-                        </div>
-                        <!-- timeline-content -->
-                    </div>                    
-                    </section>
-                </div>
-
-              <div class="nav-center">
-                <!-- Nav tabs -->
-                <ul class="nav nav-pills" role="tablist" id="schedule-tabs">
-                    <li role="presentation" class="active"><a href="#" aria-controls="day2" role="tab" data-toggle="tab">October 1, 2025</a></li>
-                </ul>
-            </div>
-            <section class="timeline">
-            <div class="timeline-block">
-                        <div class="timeline-bullet wow zoomIn" data-wow-delay="0s">
-
-                        </div>
-                        <!-- timeline-bullet -->
-
-                        <div class="timeline-content">
-                            <h2 class="wow flipInX" data-wow-delay="0.3s">Award Announcement</h2>
-                            <span class="date wow flipInX" data-wow-delay="0.3s">8:00PM PST</span>
-                        </div>
-                        <!-- timeline-content -->
-                    </div>
-            </div>          
-            </section>
-
-                
-                <!-- timeline -->
-
-                <!-- ########### End Schedule Timeline  DAY 02  ########### -->
-
-            </div>
-
-
-            <!-- <div role="tabpanel" class="tab-pane" id="day3">..33333.</div> -->
         </div>
-
     </div>
-    <!-- end .container -->
-
 </section>
-<!-- end section.schedule -->
 
 <!--
- Rules : Benefits
+ Rules
  ====================================== -->
-
-<!-- TODO: Change Icons to Fonts for better theming. -->
-
-<section class="rules" id="rules">
-
-    <div class="container">
-        <div class="section-title wow fadeInUp">
-            <h3>RULES</h3>
-            <hr>
-        </div>
-        <div class="section-title eligibility" id="eligibility">
-            <h4>Eligibility</h4>
-        </div>
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-                            <h6 class="benefit-title">Student</h6>
-                            <p>You have to be a student. Each applicant must be a student in an educational institution and enrolled in grades K-12 at the time of qualification. Students participate in different divisions based on their grade level: Grade K-3, Grade 4-6, Grade 7-8, Grade 9-12 Senior Division. The division for team projects with students in different grades is determined by the highest grade represented.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-                            <h6 class="benefit-title">Limited To One Entry</h6>
-                            <p>Each student is limited to one entry per year. Teams may consist of up to five participants. Team projects will be competing with individual projects in the same categories. Keep in mind that for team projects, the judging panel will have a higher expectations commensurate with the number of students on the team.</p>
-                            <p>Projects must be produced by the participants and the participants only. If a project submitted under an individual’s name is discovered to have been prepared by a team of more than one student, the participant will be disqualified.</p>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-                            <h6 class="benefit-title">New Project</h6>
-                            <p>Students are allowed to enter the igniteCS Programming Expo using projects submitted to any other science fairs or competitions.</p>
-                            <p>However, any project reentered from a past igniteCS Programming Expo must show substantial new development and extension to be eligible for an award. Final determination shall be made by the category judges.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-                            <h6 class="benefit-title">Supervision</h6>
-                            <p> Students not accompanied by their own parent(s) must be under authorized supervision by an adult escort, teacher, or administrator. The igniteCS Programming Expo is not responsible for the supervision of any participant.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="section-title wow fadeInUp acceptance" id="acceptance">
-            <h4>Application Acceptance Criteria</h4>
-        </div>
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                <div class="row">
-                    <div class="col-sm-6 text-center">
-                        <div class="wow fadeInLeft">
-                            <p>Submission of an Application to the igniteCS Programming Expo does not guarantee acceptance to the Fair. The Expo can reject applications on the basis of inappropriate content or for violations of Expo regulations. </p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 text-center">
-                        <div class="wow fadeInRight">
-                            <p>Students, parents, and advisors should be aware that these acceptance criteria are not intended to limit the number of participants but rather, by requiring higher standards for project abstracts, to improve the quality of the Fair and to ensure that all participants are able to effectively communicate their projects to the judges.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="section-title">
-            <h5>The following is the official list of acceptance criteria</h5>
-        </div>
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-
-                            <h6 class="benefit-icon">1.</h6>
-                            <p>Applications without a Project Summary will be rejected without recourse to appeal. Each student on a team project must complete his/her own personal Application, but the Project Summary need only be supplied by one member of the team. As long as the Summary is provided by at least one member, other members of the team may choose to provide or omit the Summary without penalty.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-                            <h6 class="benefit-icon">2.</h6>
-                            <p>Projects could be based on existing ideas and examples, but students must have the new and students’ own extension and improvement. Projects which are merely following existing tutorials, code, lessons are generally not acceptable.</p>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-
-                            <h6 class="benefit-icon">3.</h6>
-                            <p>The project must be related with Computer Science and be implemented using programming techniques. You are required to show a live demo of the project on the Expo site, and be able to explain the implementation details to the judges.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-
-                            <h6 class="benefit-icon">4.</h6>
-                            <p>Acceptance to present a project at the the igniteCS Programming Expo requires the approval of an Application submitted by the student(s) or their parent(s)/guardian(s).</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-
-                            <h6 class="benefit-icon">5.</h6>
-                            <p>Application Fees are not refundable. The only exception is for multiple payments for the same application.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-
-                            <h6 class="benefit-icon">6.</h6>
-                            <p>Applications may be rejected for failing to satisfy the rules of the Fair.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-                            <h6 class="benefit-icon">7.</h6>
-                            <p>Project Summaries must communicate ideas effectively and use standard English.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <!-- <div class="section-title demo-reg" id="demo-reg">
-            <h4>Display and Demo Regulations</h4>
-        </div>
-        <div class="section-title">
-            <h6>Display Size Limitations</h6>
-        </div>
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                <div class="row text-center">
-                    <div class="col-sm-4">
-                        <div class="wow fadeInUp">
-                            <p><strong>Maximum Width</strong> </p>
-                            <p>4 feet (122 cm)</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="wow fadeInUp">
-                            <p><strong>Maximum Depth</strong> </p>
-                            <p>2.5 feet (76 cm)</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="wow fadeInUp">
-                            <p><strong>Maximum Height</strong> </p>
-                            <p>6.5 feet (198 cm) (table)</p>
-                            <p>9 feet (274 cm) (floor)</p>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-                            <h6 class="benefit-icon">1.</h6>
-                            <p>Projects displayed on tables are the preferred standard. Projects which require floor access may utilize Fair tables for a portion of their display, but the entire display must still fit within the width and depth limitations specified above. Projects with floor displays may be placed out of numerical sequence and possibly away from other projects in the same subject category.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-                            <h6 class="benefit-icon">2.</h6>
-                            <p>Projects requesting electrical power will be provided with one 110 volt outlet. You must bring your own UL approved three prong grounded extension cord. The igniteCS Programming Expo does not provide extension cords. Wifi will be provided in the exhibition hall.</p>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-
-                            <h6 class="benefit-icon">3.</h6>
-                            <p>Students must be present at their display during the judging period or the project will not be judged. For team projects, at least one of the authors must be present before judging will be allowed.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-
-                            <h6 class="benefit-icon">4.</h6>
-                            <p>Students must bring their own demo devices and equipments as needed, such as computers, laptops, robots, smart phones, tablets, smart devices, electronics devices, etc. </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-
-                            <h6 class="benefit-icon">5.</h6>
-                            <p>All project displays must adhere to all Los Angeles, State, and federal laws for public safety. The igniteCS Programming Expo will disqualify any project deemed unsafe.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-                            <h6 class="benefit-icon">6.</h6>
-                            <p>A project poster or display board is NOT required but highly recommended if it helps to demonstrate and explain your project.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInLeft">
-                            <h6 class="benefit-icon">7.</h6>
-                            <p>Parents and advisors are not permitted in the display areas during judging. Violations may result in disqualification of student participants.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="benefit-item wow fadeInRight">
-                            <h6 class="benefit-icon">8.</h6>
-                            <p><strong>IMPORTANT:</strong> LOSS OR DAMAGE Valuable equipment, such as computers, may be part of the display only if the student participant accepts full responsibility. It is advised that valuable materials (e.g. computers, research notebook) be on display only during the actual judging period. Although precautionary security service will be provided, the igniteCS Programming Expo assumes no responsibility for loss or damage to any project or project part. </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-    </div>
-
-    </div>
-
-
-
-    </div>
-    <!-- end .container -->
-</section>
-<!-- end section.benefits -->
-<!--
- Qualified Projects
- ====================================== -->
-
-<section class="qualified" id="qualified">
-
-    <div class="container">
-
-        <div class="section-title">
-            <h4>Qualified Projects</h4>
-            <p>Basically any kind of projects involved with coding could participate. Below we listed the typical project categories and examples.</p>
+<section class="section" id="rules">
+    <div class="wrap">
+        <div class="section-head center reveal">
+            <span class="eyebrow">Official Rules</span>
+            <h2>The fine print.</h2>
         </div>
 
-        <div class="row">
-            <div class="col-md-4">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Game and Animation</div>
-                    <ul class="plan-features">
-                        <li>2D/3D Games</li>
-                        <li>Mobile Games</li>
-                        <li>Web Games</li>
-                        <li>Graphic Animation and Movies</li>
-                    </ul>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li> Scratch, Unity3D, Alice, Unreal, Blocky, etc. </li>
-                    </ul>
+        <div class="rules reveal">
+            <details id="eligibility">
+                <summary>Eligibility</summary>
+                <div class="details-body">
+                    <h4>Student</h4>
+                    <p>Each applicant must be a student in an educational institution and enrolled in grades K–12 at the time of qualification. Students participate in different divisions based on their grade level: Grade K–3, Grade 4–6, Grade 7–8, and Grade 9–12 Senior Division. The division for team projects with students in different grades is determined by the highest grade represented.</p>
+                    <h4>Limited to One Entry</h4>
+                    <p>Each student is limited to one entry per year. Teams may consist of up to five participants. Team projects compete with individual projects in the same categories. Keep in mind that for team projects, the judging panel will have higher expectations commensurate with the number of students on the team.</p>
+                    <p>Projects must be produced by the participants and the participants only. If a project submitted under an individual's name is discovered to have been prepared by a team of more than one student, the participant will be disqualified.</p>
+                    <h4>New Project</h4>
+                    <p>Students are allowed to enter the IgniteAI Expo using projects submitted to any other science fairs or competitions.</p>
+                    <p>However, any project re-entered from a past IgniteAI Expo must show substantial new development and extension to be eligible for an award. Final determination shall be made by the category judges.</p>
+                    <h4>Supervision</h4>
+                    <p>Students not accompanied by their own parent(s) must be under authorized supervision by an adult escort, teacher, or administrator. The IgniteAI Expo is not responsible for the supervision of any participant.</p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="pricing-item wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Robotics</div>
-                    <ol class="plan-features">
-                        <li>Robotics Innovations</li>
-                        <li>Program Robots to Address Problems</li>
-                        <li><br> </li>
-                        <li><br> </li>
+            </details>
+
+            <details id="acceptance">
+                <summary>Application Acceptance Criteria</summary>
+                <div class="details-body">
+                    <p>Submission of an application to the IgniteAI Expo does not guarantee acceptance. The Expo can reject applications on the basis of inappropriate content or for violations of Expo regulations.</p>
+                    <p>Students, parents, and advisors should be aware that these acceptance criteria are not intended to limit the number of participants but rather, by requiring higher standards for project abstracts, to improve the quality of the Expo and to ensure that all participants are able to effectively communicate their projects to the judges.</p>
+                    <h4>The official list of acceptance criteria</h4>
+                    <ol>
+                        <li>Applications without a Project Summary will be rejected without recourse to appeal. A team submits a single application for the whole team, listing every member, with one contact email.</li>
+                        <li>Projects may be based on existing ideas and examples, but students must add their own new extensions and improvements. Projects that merely follow existing tutorials, code, or lessons are generally not acceptable.</li>
+                        <li>The project must be a working, technology-driven build, implemented using programming, AI, data, or hardware techniques. You are required to show a live demo of the project during your interview, and be able to explain the implementation details to the judges.</li>
+                        <li>Acceptance to present a project at the IgniteAI Expo requires the approval of an application submitted by the student(s) or their parent(s)/guardian(s).</li>
+                        <li>Application fees are not refundable. The only exception is for multiple payments for the same application.</li>
+                        <li>Applications may be rejected for failing to satisfy the rules of the Expo.</li>
+                        <li>Project Summaries must communicate ideas effectively and use standard English.</li>
                     </ol>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li> Lego, Vex, SPRK (Sphero), Ozobot, etc. </li>
-                    </ul>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="pricing-item wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Hardware and Electronics</div>
-                    <ul class="plan-features">
-                        <li>Hardware Applications</li>
-                        <li>Smart Devices</li>
-                        <li>Embedded Electronic Systems</li>
-                        <li><br> </li>
-                    </ul>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li> Raspberry PI, Arduino, Sparkfun, etc. </li>
-                    </ul>
-                </div>
-            </div>
+            </details>
 
+            <details>
+                <summary>Do I need to be a strong programmer?</summary>
+                <div class="details-body">
+                    <p>No. Students enter at every level, from a first Scratch project to original research, and are judged within their own grade division. What matters: it works, you understand it, and you can show it live.</p>
+                </div>
+            </details>
 
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Mobile and Web</div>
-                    <ul class="plan-features">
-                        <li>Android/iOS Apps</li>
-                        <li>Mobile Application Dev Techniques</li>
-                        <li>Website</li>
-                        <li>Web Services and Applications</li>
-                        <li><br> </li>
-                    </ul>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li> Android, iOS, React Native, MIT App Inventor, Swift, HTML, CSS, JavaScript, AngularJS, ReactJS, etc. </li>
-                    </ul>
+            <details>
+                <summary>My passion isn't computer science. Is this for me?</summary>
+                <div class="details-body">
+                    <p>Yes — that's the point of AI + X. Bring your biology, music, economics, history, sports or art, and enter whichever track fits what you built.</p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Algorithms</div>
-                    <ol class="plan-features">
-                        <li>Programming Algorithms</li>
-                        <li>Programming Language Innovation</li>                        
-                        <li>Data Analysis </li>     
-                        <li>Time Complexity Analysis</li>
-                        <li>Algorithm Theory</li>
-                        <li>Computational Models</li>
-                        <li> <br> </li>                   
-                    </ol>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li> Java, Python, C/C++, R, Matlab, etc. </li>
-                    </ul>
+            </details>
+
+            <details>
+                <summary>I live outside the United States. Can I take part?</summary>
+                <div class="details-body">
+                    <p>Yes. The Expo is entirely online. Applications and interviews are in English, and this page shows every date in your local time.</p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Cyber Security</div>
-                    <ul class="plan-features">
-                        <li>Information Security</li>
-                        <li>Data Privacy</li>
-                        <li>Cyber Attack and Defense</li>
-                        <li>Cryptology </li>
-                        <li>Mobile and Web Security</li>
-                        <li> <br> </li>
-                    </ul>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li> Java, Python, C/C++, Android, iOS, JavaScript, etc. </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="row">            
-            <div class="col-md-3">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">AI</div>
-                    <ul class="plan-features">
-                        <li>Machine Learning</li>
-                        <li>Deep Learning</li>
-                        <li>Generative AI</li>
-                        <li>Large Language Model</li>                        
-                        <li> <br> </li>
-                    </ul>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li> Java, Python, C/C++, Sklearn, Tensorflow, etc. </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Data Science</div>
-                    <ul class="plan-features">
-                        <li>Data Analysis</li>
-                        <li>Data Visualization</li>
-                        <li>Data Manipulation</li>
-                        <li>Data-Driven Application</li>                        
-                        <li> <br> </li>
-                    </ul>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li>Python, R, Matlab, etc.</li>
-                    </ul>
-                </div>                
-            </div>
-            <div class="col-md-3">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Software Applications and Systems</div>
-                    <ul class="plan-features">
-                        <li>Valid if it does not belong to the categories above.</li>
-                    </ul>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li> It could be the languages or tools from any categories above. </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Business and Entrepreneurship</div>
-                    <ul class="plan-features">
-                        <li>Business Applications</li>
-                        <li>Startup Solutions</li>
-                        <li>E-commerce Platforms</li>
-                        <li>Financial Technology</li>
-                        <li>Market Analysis Tools</li>
-                    </ul>
-                    <ul class="plan-features">
-                        <li><strong>Sample Programming and Tools</strong></li>
-                        <li>Python, JavaScript, React, Node.js, SQL, etc.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="pricing-item  wow zoomIn" id="qualified-style" data-wow-duration="2s">
-                    <div class="plan-name">Project Criteria</div>
-                    <ul class="plan-features">
-                        <li> <strong>1.</strong> Run a live working demo. You must be able to provide and run a live demo of your project for the judges on site. Please note that this is a live demo, rather than a video. However, it is highly recommended that each participate prepares a video demo as a backup just in case the live demo cannot conducted successfully. Prepare and bring all the devices, programs, and tools you need for the demo, and make sure it works!</li>
-                        <li> <strong>2.</strong> Know the technical details. The judge would be interested to learn how you have built the project step by step. Thus, make sure that you understand the technical details and be able to explain how your program/code works.</li>
-                        <li><strong>3.</strong> Make something useful. You can make your project with any ideas. One question the judge would ask you is: what can do we do with this project? Make sure that you think about all the meaningful and interesting use cases for your project. </li>
-                        <li><strong>4.</strong> Use your imagination and creativity to do whatever you can to make the judges say “Wow, that's cool!”. </li>
-                    </ul>
-                </div>
-            </div>
+            </details>
         </div>
     </div>
-</section>
-
-<section class="awards" id="awards">
-    <div class="container">
-        <div class="section-title wow fadeInUp">
-            <h3>Awards</h3>
-            <hr>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h5>Category Awards</h5>
-                <p>The igniteCS Programming Expo awards the top five projects within each subject category and each age division as First Place, Second Place, Third Place, Fourth Place, and Fifth Place. In addition, innovative project award, best teamwork award, distinguished ideas award will also be given in each category and age group.</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h5>People Choice Award</h5>
-                <p>Each participant votes for 3 other projects.</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h5>Project of the Year</h5>
-                <p>Every first place winning project in each subject category in order to select the best project in each age division.</p>
-            </div>
-
-        </div>
-
-
-    </div>
-    <!-- end .container -->
 </section>
 
 <!--
  Gallery
  ====================================== -->
-
-<section class="gallery" id="gallery">
-    <div class="container">
-        <div class="section-title">
-            <h3>GALLERY</h3>
-            <hr>
+<section class="section alt" id="gallery">
+    <div class="wrap">
+        <div class="section-head reveal">
+            <span class="eyebrow">Gallery</span>
+            <h2>Moments from past Expos.</h2>
         </div>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="photo-gallery">
-
-                <div class="popup-gallery">
-
-                    <div class="row">
-
-                        <div class="col-md-6">
-                            <a href="images/pic6.jpg" title=""><img src="images/pic6.jpg" alt="gallery image" class="img-responsive img-thumbnail wow fadeIn"></a>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="row">
-
-                                <div class="col-sm-6">
-                                    <a href="images/pic5.jpg" title=""><img src="images/pic5.jpg" alt="gallery image" class="img-responsive img-thumbnail wow fadeIn" data-wow-delay="0.2s"></a>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <a href="images/pic1.jpg" title=""><img src="images/pic1.jpg" alt="gallery image" class="img-responsive img-thumbnail wow fadeIn" data-wow-delay="0.2s"></a>
-                                </div>
-
-                            </div>
-                            <!-- end .row -->
-
-                            <div class="row">
-
-                                <div class="col-sm-6">
-                                    <a href="images/pic3.jpg" title=""><img src="images/pic3.jpg" alt="gallery image" class="img-responsive img-thumbnail wow fadeIn" data-wow-delay="0.4s"></a>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <a href="images/pic4.jpg" title=""><img src="images/pic4.jpg" alt="gallery image" class="img-responsive img-thumbnail wow fadeIn" data-wow-delay="0.4s"></a>
-                                </div>
-
-                            </div>
-                            <!-- end .row -->
-
-                        </div>
-
-                    </div>
-                    <!-- end .row -->
-
-                </div>
-                <!-- end .popup-gallery -->
-            </div>
-            <!-- end .tabpanel -->
-
-            <!-- // end tab-pane -->
+        <div class="gallery reveal">
+            <a href="images/pic6.jpg"><img src="images/pic6.jpg" alt="A judge reviewing a student's project on a laptop" loading="lazy"></a>
+            <a href="images/pic5.jpg"><img src="images/pic5.jpg" alt="Expo participant" loading="lazy"></a>
+            <a href="images/pic1.jpg"><img src="images/pic1.jpg" alt="Students presenting to a judge" loading="lazy"></a>
+            <a href="images/pic3.jpg"><img src="images/pic3.jpg" alt="Expo participant" loading="lazy"></a>
+            <a href="images/pic4.jpg"><img src="images/pic4.jpg" alt="Expo participants" loading="lazy"></a>
         </div>
-        <!-- end .tab-content -->
-
     </div>
-    <!-- end .container -->
 </section>
-<!-- end section.gallery -->
-<!--
- Our Sponsors
- ====================================== -->
-
-<section class="sponsors" id="sponsors">
-    <div class="container">
-
-        <div class="section-title wow fadeInUp">
-            <h3>OUR SPONSORS</h3>
-            <hr>
-        </div>
-
-        <div class="speaker-slider">
-
-            <div class="speaker-info wow fadeIn" data-wow-delay="0.5s">
-                <img src="images/snapchat.jpg" alt="avatar" class="center-block" width="130" height="130">
-                <p>Snapchat</p>
-            </div>
-
-            <div class="speaker-info wow fadeIn" data-wow-delay="0.3s">
-                <img src="images/googleignite.png" alt="avatar" class="img-responsive center-block" width="130" height="130">
-                <p>Google IgniteCS</p>
-            </div>
-            <!-- end .speaker-info -->                                
-
-            <div class="speaker-info wow fadeIn" data-wow-delay="0.1s">
-                <img src="images/nsa-insignia-lg.png" alt="avatar" class="img-responsive center-block" width="130" height="130">
-                <p>NSA</p>
-            </div>
-            <!-- end .speaker-info -->
-
-            <div class="speaker-info wow fadeIn" data-wow-delay="0.2s">
-                <img src="images/nsf.png" alt="avatar" class="img-responsive center-block" width="130" height="130">
-                <p>NSF</p>
-            </div>
-            <!-- end .speaker-info -->
-
-            <div class="speaker-info wow fadeIn" data-wow-delay="0.3s">
-                <img src="images/northrop.jpg" alt="avatar" class="img-responsive center-block" width="130" height="130">
-                <p>Northrop Grumman</p>
-            </div>
-            <!-- end .speaker-info -->
-
-            <div class="speaker-info wow fadeIn" data-wow-delay="0.4s">
-                <img src="images/gencyber-logo-small.png" alt="avatar" class="img-responsive center-block" width="130" height="130">
-                <p>GenCyber</p>
-            </div>
-            <!-- end .speaker-info -->   
-
-            <div class="speaker-info wow fadeIn" data-wow-delay="0s">
-                <img src="images/kronosaur.jpg" alt="avatar" class="img-responsive center-block" width="130" height="130">
-                <p>Kronosaur</p>
-            </div>
-            <!-- end .speaker-info -->         
-
-        </div>
-        <div class="section-title wow fadeInUp">
-            <h5>This year, we are glad to announce that NSA GenCyber Program is sponsoring the event, so the registration fee is waived.</h5>
-        </div>
-    </div>
-    <!-- end .container -->
-</section>
-
-
-<!-- <section class="faq">
-
-    <div class="container">
-
-        <div class="section-title">
-            <h5>Frequently Asked Questions</h5>
-        </div>
-        <div class="row">
-            <div class="col-md-6 wow fadeInLeft" data-wow-duration="2s">
-                <h6 class="faq-title">How can I get to the venue?</h6>
-                <p>The map and Contact details are listed within the contact information.You will also receive a confirmation email with location map.</p>
-                <h6 class="faq-title">What about accommodation?</h6>
-                <p>The cost of the hotel accommodation and travel is not included in the event fee. For corporate accommodation rate, please contact us directly.</p>
-            </div>
-            <div class="col-md-6 wow fadeInRight" data-wow-duration="2s">
-
-                <h6 class="faq-title">What payment types do you accept?</h6>
-                <p>All payments are processed via PayPal. You may also pay at the time of event. But please reserve your seat by contacting us directly.</p>
-
-                <h6 class="faq-title">Can I get a refund on my tickets?</h6>
-                <p>All tickets are non-refundable unless the event is cancelled by us, in which case we will always make a full refund.</p>
-
-            </div>
-        </div>
-    </div>
-</section> -->
-<!-- end section.faq -->
 
 <!--
- Contact us
+ About Google IgniteCS
  ====================================== -->
-<section class="contact" id="contact">
-    <div class="highlight">
-        <div class="container">
-            <!-- 3801 W Temple Ave, Pomona, CA 91768 -->
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="contact-box">
-                        <img src="images/location-icon.png" alt="location icon" class="wow zoomIn">
-                        <h5>ADDRESS</h5>
-                        <p>This competition will now be held online</p>
-                        <br>
-                            <br>
-                            <br>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="contact-box">
-                        <img src="images/email-icon.png" alt="email icon" class="wow zoomIn" data-wow-delay="0.3s">
-                        <h5>CONTACT</h5>
-                        <p>Any questions?
-                            <br> Email us at:
-                            <br> <a href="mailto:ignite@cpp.edu">Contact Us</a>
-                            <br>
-                            <br>
-                            <br>
-                        </p>
-                    </div>
-                </div>
+<section class="section" id="about">
+    <div class="wrap">
+        <div class="about reveal">
+            <div class="about-logo"><img src="images/ignitecs-logo.png" alt="Google IgniteCS logo" loading="lazy"></div>
+            <div>
+                <span class="eyebrow">Our Roots</span>
+                <p>The Expo grew out of Google's IgniteCS program, founded in 2015 to connect university mentors with K–12 students, particularly in underrepresented communities. That mission hasn't changed: give every young innovator a stage.</p>
             </div>
-            <!--  // end .row -->
         </div>
     </div>
-    <!-- //  end .highlight -->
 </section>
-<footer>
 
-    <div class="footer-info">
-        <p><small class="text-muted">Promoting Computer Science Education for K-12 Students</small></p>
-        <p><small class="text-muted">Inspiring the Next Generation of Programmers and Innovators</small></p>
+<!--
+ Apply
+ ====================================== -->
+<section class="cta" id="apply">
+    <div class="wrap reveal">
+        <span class="eyebrow">Due September 27, 2026 · 11:59 PM PT</span>
+        <h2>Bring your <em class="hl">X</em>. We'll bring the stage.</h2>
+        <div class="hero-cta">
+            <a class="btn btn-primary js-apply" href="mailto:ignite@cpp.edu?subject=IgniteAI%20Expo%202026%20Application">Submit your project <span class="arrow">→</span></a>
+            <a class="btn btn-ghost" href="mailto:ignite@cpp.edu">Ask a question</a>
+        </div>
+        <p class="apply-note" id="apply-pending">The 2026 application form link will be posted here. Questions? <a href="mailto:ignite@cpp.edu">ignite@cpp.edu</a></p>
     </div>
-    <p> <small class="text-muted">Copyright © 2025 IgniteCS Programming Expo. All rights reserved.</small></p>
+</section>
 
+<!--
+ Footer
+ ====================================== -->
+<footer class="footer" id="contact">
+    <div class="wrap">
+        <div class="footer-grid">
+            <div>
+                <a class="brand" href="#top">
+                    <svg class="brand-mark"><use href="#mark"/></svg>
+                    <span>Ignite<i>AI</i> Expo</span>
+                </a>
+                <p>Held online · <a class="mail" href="mailto:ignite@cpp.edu">ignite@cpp.edu</a></p>
+            </div>
+            <div class="footer-links">
+                <a href="#name">Why IgniteAI</a>
+                <a href="#ai-x">AI + X</a>
+                <a href="#tracks">Tracks</a>
+                <a href="#timeline">Timeline</a>
+                <a href="#judging">Judging</a>
+                <a href="#awards">Awards</a>
+                <a href="#rules">Rules</a>
+                <a href="results.html">Results</a>
+            </div>
+        </div>
+        <div class="footer-bottom">Copyright © 2026 IgniteAI Expo, formerly the IgniteCS Programming Expo. All rights reserved.</div>
+    </div>
 </footer>
 
-<a href="#top" class="back_to_top"><img src="images/back_to_top.png" alt="back to top"></a>
+<dialog class="lightbox" id="lightbox">
+    <button aria-label="Close">×</button>
+    <img src="" alt="">
+</dialog>
 
-<!--
- Registration Popup (PAYPAL)
- ====================================== -->
-
-<div class="modal fade" id="register-now" tabindex="-1" role="dialog" aria-labelledby="register-now-label">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-center" id="register-now-label">Event Registration
-                </h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="registration-form">
-
-                    <!-- Testing Paypal? Change Paypal URL to https://www.sandbox.paypal.com/cgi-bin/webscr If you are testing -->
-
-                    <form action="https://www.paypal.com/cgi-bin/webscr" method="POST" target="_top" id="paypal-regn">
-
-                        <div class="row">
-
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>First Name</label>
-                                    <input type="text" class="form-control" name="first_name" placeholder="First Name" required>
-
-                                </div>
-
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>Last Name</label>
-                                    <input type="text" class="form-control" name="last_name" placeholder="last name" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Email ID</label>
-                            <input type="email" class="form-control" name="email" placeholder="Email Address" required>
-                        </div>
-
-                        <div class="row">
-
-                            <div class="col-sm-7">
-
-                                <div class="form-group">
-                                    <label>Choose a Pass</label>
-                                    <select class="form-control" name="os0" required>
-                                        <option value="">Choose...</option>
-                                        <option value="Silver Pass">Silver Pass $49.00 USD</option>
-                                        <option value="Gold Pass">Gold Pass $99.00 USD</option>
-                                        <option value="VIP Pass">VIP Pass $149.00 USD</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-sm-5">
-
-                                <div class="form-group">
-                                    <label>No. of Seats</label>
-                                    <select class="form-control" name="quantity" required>
-                                        <option value="">Choose...</option>
-                                        <option value="1">1 seat</option>
-                                        <option value="2">2 seats</option>
-                                        <option value="3">3 seats</option>
-                                    </select>
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="agree" required> I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!--
-                        Paypal Hidden Fields
-                        ====================================== -->
-
-                        <!-- Customization Guide : http://bit.ly/papyal_dev_html_guide/ -->
-                        <!-- Paypal Form customization is not included in the Support Scope. Sorry. -->
-                        <!-- Change values inside value="" only -->
-
-                        <input type="hidden" name="cmd" value="_xclick">
-                        <!-- Your Paypal email to receive funds -->
-                        <input type="hidden" name="business" value="surjithctly@gmail.com">
-                        <input type="hidden" name="lc" value="US">
-                        <!-- Product Name -->
-                        <input type="hidden" name="item_name" value="Gather Event Pass">
-                        <!-- Label for Pass -->
-                        <input type="hidden" name="on0" value="Pass">
-                        <input type="hidden" name="button_subtype" value="services">
-                        <input type="hidden" name="no_note" value="1">
-                        <!-- Your Paypal currency -->
-                        <input type="hidden" name="currency_code" value="USD">
-                        <input type="hidden" name="bn" value="Event_BuyNow_WPS_IN">
-                        <!-- Pricing One Text (Should Match above form) -->
-                        <input type="hidden" name="option_select0" value="Silver Pass">
-                        <!-- Pricing One Amount (Should Match above form) -->
-                        <input type="hidden" name="option_amount0" value="49.00">
-                        <!-- Pricing One Text (Should Match above form) -->
-                        <input type="hidden" name="option_select1" value="Gold Pass">
-                        <!-- Pricing One Amount (Should Match above form) -->
-                        <input type="hidden" name="option_amount1" value="99.00">
-                        <!-- Pricing One Text (Should Match above form) -->
-                        <input type="hidden" name="option_select2" value="VIP Pass">
-                        <!-- Pricing One Amount (Should Match above form) -->
-                        <input type="hidden" name="option_amount2" value="149.00">
-                        <input type="hidden" name="option_index" value="0">
-                        <!-- Verify Paypal Payment - URL of PHP file. -->
-                        <!-- You have to give the Same URL also in Paypal => Profile => Selling Tools => IPN => Notfication URL -->
-                        <input type="hidden" name="notify_url" value="http://demo.web3canvas.com/themeforest/gather/php/verify-ipn.php">
-                        <!-- Payment Success Return page -->
-                        <input type="hidden" name="return" value="http://demo.web3canvas.com/themeforest/gather/success.html">
-                        <!-- Payment Cancel Return page -->
-                        <input type="hidden" name="cancel_return" value="http://demo.web3canvas.com/themeforest/gather/index.html">
-
-                        <!-- ./ End Paypal Hidden Fields -->
-
-                        <div class="text-center top-space">
-                            <button type="submit" id="reserve-btn" class="btn btn-success btn-lg">Reserve my Seat</button>
-
-                            <!-- Paypal Tracking Pixel. Do not remove -->
-                            <img alt="" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-                        </div>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!--
- Javascripts : Nerd Stuff :)
- ====================================== -->
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113556161-1"></script>
 <script>
@@ -1198,34 +520,7 @@ TIP: You can change your event time below in the Same Format.  -->
   gtag('config', 'UA-113556161-1');
 </script>
 
-<!-- jQuery Library -->
-<script src="js/jquery.min.js"></script>
-
-<!-- Bootstrap JS -->
-<script src="js/bootstrap.min.js"></script>
-
-<!-- 3rd party Plugins -->
-<script src="js/plugins/countdown.js"></script>
-<script src="js/plugins/wow.js"></script>
-<script src="js/plugins/slick.js"></script>
-<script src="js/plugins/magnific-popup.js"></script>
-<script src="js/plugins/validate.js"></script>
-<script src="js/plugins/appear.js"></script>
-<script src="js/plugins/count-to.js"></script>
-<script src="js/plugins/nicescroll.js"></script>
-
-<!-- Google Map -->
-<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<script src="js/plugins/infobox.js"></script>
-<script src="js/plugins/google-map.js"></script>
-<script src="js/plugins/directions.js"></script>
-
-<!-- JS Includes -->
-<script src="js/includes/subscribe.js"></script>
-<script src="js/includes/contact_form.js"></script>
-
-<!-- Main Script -->
-<script src="js/main.js"></script>
+<script src="js/expo.js?v=2026k"></script>
 
 </body>
 

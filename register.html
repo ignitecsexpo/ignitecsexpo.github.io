@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Apply — IgniteAI Expo 2026</title>
+    <meta name="description" content="Apply to IgniteAI Expo 2026. Applications are due Sunday, September 27, 2026 at 11:59 PM Pacific Time.">
+    <meta name="theme-color" content="#faf7f1">
+
+    <link rel="shortcut icon" href="images/favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="css/expo.css?v=2026k" rel="stylesheet">
+</head>
+
+<body id="top">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <symbol id="mark" viewBox="0 0 40 40">
+            <path d="M20 1.5 36 10.75v18.5L20 38.5 4 29.25v-18.5z" fill="#e4472b"/>
+            <path d="M26.6 12.2c-4.6.3-8.2 2.6-10.4 6.6l-3 .5-1.9 2.9 3.4.3 2.8 2.8.3 3.4 2.9-1.9.5-3c4-2.2 6.3-5.8 6.6-10.4a1.1 1.1 0 0 0-1.2-1.200zm-3.300 6.400a1.700 1.700 0 1 1 0-3.400 1.700 1.700 0 0 1 0 3.400zM13.200 25.100c-1.300.4-2 1.900-2.200 3.900 2-.2 3.500-.9 3.900-2.200z" fill="#fff"/>
+        </symbol>
+    </defs>
+</svg>
+
+<nav class="nav scrolled" aria-label="Main">
+    <div class="wrap nav-inner">
+        <a class="brand" href="index.html">
+            <svg class="brand-mark"><use href="#mark"/></svg>
+            <span>Ignite<i>AI</i> Expo</span>
+        </a>
+        <div class="nav-simple">
+            <a class="opt" href="index.html#rules">Rules</a>
+            <a href="index.html">← Back to site</a>
+        </div>
+    </div>
+</nav>
+
+<header class="reg-hero">
+    <div class="wrap" style="max-width:820px">
+        <span class="eyebrow">2026 Application</span>
+        <h1>Tell us what you <em class="hl">built</em>.</h1>
+        <p>Due Sunday, September 27, 2026 at 11:59 PM PT. One application per project. Entering as a team? Submit once for the whole team and list every teammate.</p>
+    </div>
+</header>
+
+<main class="reg-wrap">
+
+    <div class="notice" id="reg-notice" hidden></div>
+
+    <form class="reg-form" id="reg-form" novalidate>
+
+        <fieldset>
+            <legend><span>01</span>Entry</legend>
+            <p class="hint">A team submits <strong>one</strong> application for everyone. Teams may have up to five students.</p>
+            <div class="fields">
+                <div class="field full">
+                    <div class="choice-row">
+                        <label class="choice"><input type="radio" name="entryType" value="individual" checked><span>Individual</span></label>
+                        <label class="choice"><input type="radio" name="entryType" value="team"><span>Team (2 – 5 students)</span></label>
+                    </div>
+                </div>
+                <div class="field full team-only" hidden>
+                    <label for="teamName">Team name</label>
+                    <input id="teamName" name="teamName" maxlength="120">
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend><span>02</span><span id="student-legend" style="font-style:normal;color:inherit;margin:0">Student</span></legend>
+            <p class="hint" id="student-hint">The student who is applying.</p>
+            <div class="fields">
+                <div class="field">
+                    <label for="firstName">First name</label>
+                    <input id="firstName" name="firstName" autocomplete="given-name" maxlength="80" required>
+                </div>
+                <div class="field">
+                    <label for="lastName">Last name</label>
+                    <input id="lastName" name="lastName" autocomplete="family-name" maxlength="80" required>
+                </div>
+                <div class="field">
+                    <label for="grade">Grade in fall 2026</label>
+                    <select id="grade" name="grade" required>
+                        <option value="">Choose…</option>
+                        <option>K</option><option>1</option><option>2</option><option>3</option>
+                        <option>4</option><option>5</option><option>6</option><option>7</option>
+                        <option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+                    </select>
+                    <small id="division-note"></small>
+                </div>
+                <div class="field">
+                    <label for="school">School</label>
+                    <input id="school" name="school" maxlength="160" required>
+                </div>
+                <div class="field">
+                    <label for="city">City / State or Province</label>
+                    <input id="city" name="city" maxlength="120" required>
+                </div>
+                <div class="field">
+                    <label for="country">Country</label>
+                    <input id="country" name="country" autocomplete="country-name" maxlength="80" required>
+                </div>
+                <div class="field full">
+                    <label for="studentEmail">Student email <i>(optional)</i></label>
+                    <input id="studentEmail" name="studentEmail" type="email" autocomplete="email" maxlength="160">
+                </div>
+            </div>
+
+            <div class="team-only" id="roster-wrap" hidden>
+                <h3 class="roster-title">Teammates</h3>
+                <p class="hint" style="margin-bottom:14px">Add every other student on the team, exactly as their names should appear on certificates. The team competes in the division of its highest grade.</p>
+                <div id="roster"></div>
+                <button type="button" class="btn btn-ghost btn-sm" id="add-mate">+ Add a teammate</button>
+                <div class="err" id="roster-err" style="color:var(--accent-dark);font-size:13px;margin-top:8px"></div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend><span>03</span>Contact</legend>
+            <p class="hint" id="contact-hint">A parent or guardian. We send interview details and results to this one address.</p>
+            <div class="fields">
+                <div class="field">
+                    <label for="parentName">Full name</label>
+                    <input id="parentName" name="parentName" maxlength="160" required>
+                </div>
+                <div class="field">
+                    <label for="parentEmail">Email</label>
+                    <input id="parentEmail" name="parentEmail" type="email" maxlength="160" required>
+                </div>
+                <div class="field full">
+                    <label for="parentPhone">Phone <i>(optional, include country code)</i></label>
+                    <input id="parentPhone" name="parentPhone" type="tel" maxlength="40">
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend><span>04</span>Project</legend>
+            <p class="hint">Pick the track that fits best. AI + X projects are welcome in every track.</p>
+            <div class="fields">
+                <div class="field full">
+                    <label for="projectTitle">Project title</label>
+                    <input id="projectTitle" name="projectTitle" maxlength="200" required>
+                </div>
+                <div class="field">
+                    <label for="track">Track</label>
+                    <select id="track" name="track" required>
+                        <option value="">Choose…</option>
+                        <option>Artificial Intelligence</option>
+                        <option>Data Science</option>
+                        <option>Business &amp; Entrepreneurship</option>
+                        <option>Game &amp; Animation</option>
+                        <option>Robotics</option>
+                        <option>Hardware &amp; Electronics</option>
+                        <option>Mobile &amp; Web</option>
+                        <option>Algorithms</option>
+                        <option>Cyber Security</option>
+                        <option>Software &amp; Systems</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="xField">Your "X" <i>(optional)</i></label>
+                    <input id="xField" name="xField" maxlength="120" placeholder="e.g. marine biology, jazz, local history">
+                    <small>The field your project connects AI or code to.</small>
+                </div>
+
+                <div class="field full" id="summary-field">
+                    <label for="projectSummary">Project summary</label>
+                    <textarea id="projectSummary" name="projectSummary" maxlength="5000" placeholder="What problem does it take on? What did you build, and how does it work? What did you add that's your own?"></textarea>
+                    <small><span id="summary-count">0</span> / 5000 characters</small>
+                </div>
+
+                <div class="field">
+                    <label for="demoUrl">Demo or video link <i>(optional)</i></label>
+                    <input id="demoUrl" name="demoUrl" type="url" maxlength="500" placeholder="https://">
+                </div>
+                <div class="field">
+                    <label for="codeUrl">Code or project link <i>(optional)</i></label>
+                    <input id="codeUrl" name="codeUrl" type="url" maxlength="500" placeholder="https://">
+                </div>
+                <div class="field full">
+                    <label for="aiTools">AI tools you used, and how <i>(optional)</i></label>
+                    <input id="aiTools" name="aiTools" maxlength="500" placeholder="e.g. used an assistant to debug my training loop">
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend><span>05</span>Agreement</legend>
+            <p class="hint"></p>
+            <label class="check"><input type="checkbox" id="agreeRules" required><span>I have read the <a href="index.html#rules" target="_blank" style="text-decoration:underline">official rules</a>. This project is my own work (or our team's), and we can demonstrate it live.</span></label>
+            <label class="check"><input type="checkbox" id="agreeParent" required><span>A parent or guardian approves this application (for a team: a parent or guardian of every student) and agrees to be contacted about the Expo.</span></label>
+        </fieldset>
+
+        <!-- Honeypot: humans never see or fill this -->
+        <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+        <div class="reg-actions">
+            <button class="btn btn-primary" type="submit" id="reg-submit">Submit application <span class="arrow">→</span></button>
+            <div class="form-msg" id="form-msg" role="alert"></div>
+        </div>
+    </form>
+
+    <section class="reg-done" id="reg-done" hidden>
+        <div class="tick">✓</div>
+        <h2>Application received.</h2>
+        <p>Thank you, <strong id="done-name"></strong>. Your entry number is</p>
+        <code id="done-id" style="font-family:var(--display);font-size:54px;font-weight:600;padding:6px 26px;background:none;color:var(--accent)"></code>
+        <p>Please keep it — it is how we refer to your project from now on.</p>
+        <p id="done-emailed" hidden>We have emailed a confirmation to <strong id="done-email"></strong>.</p>
+        <p>Final interviews are on Sunday, October 4, 2026, 9:30 – 11:30 AM PT. We'll email the contact address with details.</p>
+        <p style="margin-top:30px"><a class="btn btn-ghost" href="index.html">Back to the Expo site</a></p>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <div class="wrap">
+        <div class="footer-bottom" style="margin-top:0">Questions? <a class="mail" href="mailto:ignite@cpp.edu">ignite@cpp.edu</a> · Copyright © 2026 IgniteAI Expo, formerly the IgniteCS Programming Expo.</div>
+    </div>
+</footer>
+
+<script src="js/register.js?v=2026k"></script>
+
+</body>
+
+</html>
