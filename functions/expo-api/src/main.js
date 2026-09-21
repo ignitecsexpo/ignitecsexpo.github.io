@@ -14,6 +14,7 @@ import nodemailer from 'nodemailer';
 
 const DB = 'expo';
 const MAX_PER_CALL = 15;
+const MAX_PER_EMAIL = 5; // applications per contact email, per season
 const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 const TRACKS = ['Artificial Intelligence', 'Data Science', 'Business & Entrepreneurship', 'Game & Animation', 'Robotics',
     'Hardware & Electronics', 'Mobile & Web', 'Algorithms', 'Cyber Security', 'Software & Systems'];
@@ -90,7 +91,7 @@ export default async ({ req, res, log, error }) => {
             season: season.$id,
             firstName: str(input.firstName, 80), lastName: str(input.lastName, 80), grade: str(input.grade, 3),
             school: str(input.school, 160), city: str(input.city, 120), country: str(input.country, 80),
-            studentEmail: str(input.studentEmail, 160), parentName: str(input.parentName, 160), parentEmail: str(input.parentEmail, 160),
+            studentEmail: str(input.studentEmail, 160), parentName: str(input.parentName, 160), parentEmail: (str(input.parentEmail, 160) || '').toLowerCase() || null,
             parentPhone: str(input.parentPhone, 40), projectTitle: str(input.projectTitle, 200), track: str(input.track, 60),
             xField: str(input.xField, 120), entryType: team ? 'team' : 'individual', teamName: team ? str(input.teamName, 120) : null,
             memberNames: [], memberGrades: [], projectSummary: str(input.projectSummary, 5000),
@@ -116,6 +117,12 @@ export default async ({ req, res, log, error }) => {
         // a team competes in the division of its highest grade
         const top = [data.grade].concat(data.memberGrades).sort((a, b) => gradeNum(b) - gradeNum(a))[0];
         data.division = divisionOf(top);
+
+        // One contact address can only hold a few entries per season. Without this, anyone could use the
+        // form to flood a stranger's inbox with confirmation emails sent from our domain.
+        const same = await api(rows('registrations') + '?' + q({ method: 'equal', attribute: 'season', values: [season.$id] }) + '&' +
+            q({ method: 'equal', attribute: 'parentEmail', values: [data.parentEmail.toLowerCase()] }) + '&' + q({ method: 'limit', values: [1] }));
+        if (same.total >= MAX_PER_EMAIL) return { status: 429, body: { ok: false, message: 'This email address already has ' + MAX_PER_EMAIL + ' applications. Please email us if you need to submit more.' } };
 
         // Take the next number atomically (safe when two families submit at the same moment).
         const counter = await api(rows('settings') + '/' + season.$id + '/nextEntryNumber/increment', 'PATCH', { value: 1 });
