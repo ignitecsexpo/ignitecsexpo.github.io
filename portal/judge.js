@@ -102,7 +102,7 @@
         var link = function (u) { return u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u) + '</a>' : '—'; };
         var d = openDrawer('<h2>' + esc(p.title) + '</h2><p class="sub">Entry #' + esc(p.entryNumber || '—') + ' · ' + esc(X.divLabel(p.division)) + ' · ' + esc(p.track) + (p.interviewTime ? ' · ' + esc(p.interviewTime) : '') + '</p>' +
             '<dl class="kv"><dt>Students</dt><dd>' + esc(p.members) + '</dd><dt>Entry</dt><dd>' + (p.entryType === 'team' ? 'Team of ' + (p.memberCount || '') + (p.teamName ? ' — “' + esc(p.teamName) + '”' : '') + '. Expect more from a larger team.' : 'Individual') + '</dd>' +
-            '<dt>Their “X”</dt><dd>' + esc(p.xField || '—') + '</dd><dt>From</dt><dd>' + esc(p.country || '—') + '</dd><dt>Demo / video</dt><dd>' + link(p.demoUrl) + '</dd><dt>Code</dt><dd>' + link(p.codeUrl) + '</dd><dt>AI tools used</dt><dd>' + esc(p.aiTools || 'Not stated — ask.') + '</dd></dl>' +
+            '<dt>Their “X”</dt><dd>' + esc(p.xField || '—') + '</dd><dt>From</dt><dd>' + esc(p.country || '—') + '</dd>' + (p.demoUrl ? '<dt>Demo / video</dt><dd>' + link(p.demoUrl) + '</dd>' : '') + (p.codeUrl ? '<dt>Code</dt><dd>' + link(p.codeUrl) + '</dd>' : '') + (p.aiTools ? '<dt>AI tools used</dt><dd>' + esc(p.aiTools) + '</dd>' : '') + '</dl>' +
             (p.summary ? '<div class="prose">' + esc(p.summary) + '</div>' : '<div class="note">No written summary was provided.</div>') +
             '<div class="sect">Your review</div>' +
             CRITERIA.map(function (c) {

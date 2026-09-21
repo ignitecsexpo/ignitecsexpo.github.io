@@ -240,7 +240,7 @@
             '<div class="sect">Project</div><dl class="kv"><dt>Track</dt><dd>' + esc(r.track) + '</dd><dt>Their “X”</dt><dd>' + esc(r.xField || '—') + '</dd>' +
             '<dt>Entry</dt><dd>' + (r.entryType === 'team' ? 'Team “' + esc(r.teamName) + '”' : 'Individual') + '</dd>' +
             '<dt>Students</dt><dd>' + studentsOf(r).map(function (x) { return esc(x.name) + ' <span style="color:var(--muted)">(Grade ' + esc(x.grade) + ')</span>'; }).join('<br>') + '</dd>' +
-            '<dt>Demo</dt><dd>' + link(r.demoUrl) + '</dd><dt>Code</dt><dd>' + link(r.codeUrl) + '</dd><dt>AI tools</dt><dd>' + esc(r.aiTools || '—') + '</dd></dl>' +
+            (r.demoUrl ? '<dt>Demo</dt><dd>' + link(r.demoUrl) + '</dd>' : '') + (r.codeUrl ? '<dt>Code</dt><dd>' + link(r.codeUrl) + '</dd>' : '') + (r.aiTools ? '<dt>AI tools</dt><dd>' + esc(r.aiTools) + '</dd>' : '') + '</dl>' +
             (r.projectSummary ? '<div class="prose">' + esc(r.projectSummary) + '</div>' : '<div class="note">No summary provided.</div>') +
             '<div class="sect">Correct a detail</div><div class="frow">' +
             '<div class="f"><label>First name</label><input id="r-first" value="' + esc(r.firstName) + '"></div><div class="f"><label>Last name</label><input id="r-last" value="' + esc(r.lastName) + '"></div>' +
@@ -363,7 +363,7 @@
             '<div class="sect">Shown to judges</div><div class="frow"><div class="f"><label>Title</label><input id="p-title" value="' + esc(p.title) + '"></div><div class="f"><label>Track</label><select id="p-track">' + X.opts(CFG.TRACKS, p.track) + '</select></div>' +
             '<div class="f"><label>Division</label><select id="p-div">' + X.opts(CFG.DIVISIONS, p.division) + '</select></div><div class="f"><label>Students</label><input id="p-members" value="' + esc(p.members) + '"></div></div>' +
             '<div class="f"><label>Summary</label><textarea id="p-summary" style="min-height:180px">' + esc(p.summary) + '</textarea></div>' +
-            '<dl class="kv"><dt>Their “X”</dt><dd>' + esc(p.xField || '—') + '</dd><dt>Demo</dt><dd>' + link(p.demoUrl) + '</dd><dt>Code</dt><dd>' + link(p.codeUrl) + '</dd><dt>AI tools</dt><dd>' + esc(p.aiTools || '—') + '</dd><dt>Country</dt><dd>' + esc(p.country || '—') + '</dd></dl>' +
+            '<dl class="kv"><dt>Their “X”</dt><dd>' + esc(p.xField || '—') + '</dd>' + (p.demoUrl ? '<dt>Demo</dt><dd>' + link(p.demoUrl) + '</dd>' : '') + (p.codeUrl ? '<dt>Code</dt><dd>' + link(p.codeUrl) + '</dd>' : '') + (p.aiTools ? '<dt>AI tools</dt><dd>' + esc(p.aiTools) + '</dd>' : '') + '<dt>Country</dt><dd>' + esc(p.country || '—') + '</dd></dl>' +
             '<div class="p-actions"><button class="pbtn primary" id="p-save">Save changes</button><button class="pbtn danger" id="p-del">Delete project</button></div>' +
             '<div class="sect">Reviews</div>' + reviewCards(p, true));
 

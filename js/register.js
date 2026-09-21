@@ -195,9 +195,6 @@
             memberNames: roster.map(function (m) { return (m.first + ' ' + m.last).slice(0, 160); }),
             memberGrades: roster.map(function (m) { return m.grade; }),
             projectSummary: v('projectSummary'),
-            demoUrl: v('demoUrl'),
-            codeUrl: v('codeUrl'),
-            aiTools: v('aiTools'),
             agreedToRules: true,
             parentApproved: true
         };
