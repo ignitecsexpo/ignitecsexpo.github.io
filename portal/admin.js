@@ -3,7 +3,7 @@
     'use strict';
 
     var X = EXPO, CFG = X.CFG, T = CFG.T, $ = X.$, $$ = X.$$, esc = X.esc, Query = X.Query;
-    var S = { me: null, seasons: [], season: null, regs: [], projects: [], reviews: [], certs: [], notifs: [], judges: [], admins: [], settings: {}, email: null };
+    var S = { me: null, seasons: [], season: null, signups: [], regs: [], projects: [], reviews: [], certs: [], notifs: [], judges: [], admins: [], settings: {}, email: null };
     var main = $('#main');
     var filters = { reg: { q: '', division: '', track: '', status: '' }, proj: { q: '', division: '', track: '', status: '' }, score: { division: '', track: '' } };
 
@@ -44,9 +44,9 @@
         var here = function (extra) { return X.inSeason(sid(), extra); };
         return Promise.all([
             X.listAll(T.reg, here([Query.orderDesc('entryNumber')])), X.listAll(T.proj, here()), X.listAll(T.rev, here()), X.listAll(T.cert, here()),
-            X.listAll(T.notif, here([Query.orderDesc('$createdAt')])), loadPeople(), X.getRow(T.set, sid()).catch(function () { return {}; })
+            X.listAll(T.notif, here([Query.orderDesc('$createdAt')])), loadPeople(), X.getRow(T.set, sid()).catch(function () { return {}; }), X.listAll(T.judge, here())
         ]).then(function (r) {
-            S.regs = r[0]; S.projects = r[1]; S.reviews = r[2]; S.certs = r[3]; S.notifs = r[4]; S.settings = r[6] || {};
+            S.regs = r[0]; S.projects = r[1]; S.reviews = r[2]; S.certs = r[3]; S.notifs = r[4]; S.settings = r[6] || {}; S.signups = r[7] || [];
             counts();
         });
     }
@@ -172,6 +172,8 @@
         if (!judgeList().length || judgeList().length < 2) todo.push(['Invite your judges so they can set a password before interview day.', 'judges', 'Invite judges']);
         if (S.projects.length && unassigned) todo.push(['<b>' + unassigned + '</b> project' + (unassigned > 1 ? 's have' : ' has') + ' no judge assigned.', 'projects', 'Assign judges']);
         if (S.projects.length && unreviewed) todo.push(['<b>' + unreviewed + '</b> project' + (unreviewed > 1 ? 's have' : ' has') + ' no submitted review yet.', 'scores', 'See scores']);
+        var waiting = S.signups.filter(function (j) { return j.status === 'pending'; }).length;
+        if (waiting) todo.push(['<b>' + waiting + '</b> judge sign-up' + (waiting > 1 ? 's are' : ' is') + ' waiting for your approval.', 'judges', 'Review']);
         if (S.email && !S.email.configured) todo.push(['Email sending is not set up yet, so notifications cannot go out.', 'settings', 'Set up email']);
         if (!S.settings.signerName) todo.push(['Add the name that signs the certificates.', 'settings', 'Open settings']);
 
@@ -423,12 +425,56 @@
                     '<td class="num">' + (m.userId === S.me.user.$id ? '<small>you</small>' : '<button class="pbtn sm danger" data-rm="' + m.$id + '" data-team="' + team + '">Remove</button>') + '</td></tr>';
             }).join('') + '</tbody></table></div>' : '<div class="tbl-wrap"><div class="empty">Nobody yet.</div></div>';
         }
-        main.innerHTML = head('Judges &amp; admins', 'Invite people by email. They get a link, choose their own password, and land in the right portal.') +
-            '<div class="panel"><h2>Invite a judge</h2><div class="toolbar" style="margin:0"><input type="search" id="j-name" placeholder="Name" style="max-width:220px"><input type="search" id="j-email" placeholder="Email" style="max-width:280px"><button class="pbtn primary" id="j-invite">Send invitation</button></div></div>' +
+
+        var s = S.settings, base = (s.siteUrl || X.siteBase()).replace(/\/$/, '') + '/judge-signup.html';
+        var pending = S.signups.filter(function (j) { return j.status === 'pending'; });
+        var signupPanel = '<div class="panel"><h2>Judge sign-up page <small>' + esc(S.season.name) + '</small></h2>' +
+            '<p style="color:var(--muted);font-size:14px;margin-bottom:14px">Share the <b>invite link</b> with volunteers you trust: anyone who signs up through it is approved at once and can sign in straight away. People who find the plain page without the code land in the list below as <i>pending</i> until you approve them.</p>' +
+            '<div class="frow"><div class="f"><label>Invite code</label><div style="display:flex;gap:8px"><input id="js-code" value="' + esc(s.judgeSignupCode) + '" placeholder="none yet" style="flex:1"><button class="pbtn sm" id="js-gen" type="button">New code</button></div><small>Change it to switch off a link that has spread too far.</small></div>' +
+            '<div class="f"><label>Judges\' Discord invite <i style="font-weight:400;color:var(--dim)">(shown only to approved judges)</i></label><input id="js-discord" type="url" value="' + esc(s.judgeDiscordUrl) + '" placeholder="https://discord.gg/…"></div></div>' +
+            '<div class="f"><label>What you are asking of judges <i style="font-weight:400;color:var(--dim)">(shown on the sign-up page)</i></label><input id="js-commit" value="' + esc(s.judgeCommitment) + '" placeholder="About 1–2 hours on Zoom, interviewing 6–8 student projects (5–10 minutes each) and scoring them in the judge portal."></div>' +
+            '<label style="display:flex;gap:8px;align-items:center;margin-bottom:14px"><input type="checkbox" id="js-open"' + (s.judgeSignupOpen === false ? '' : ' checked') + '> Sign-up is open</label>' +
+            '<div class="p-actions"><button class="pbtn primary" id="js-save">Save</button><button class="pbtn" id="js-copy"' + (s.judgeSignupCode ? '' : ' disabled') + '>Copy invite link</button><button class="pbtn" id="js-copy-plain">Copy plain link (needs approval)</button><a class="pbtn" href="' + esc(base + (s.judgeSignupCode ? '?code=' + encodeURIComponent(s.judgeSignupCode) : '')) + '" target="_blank">Preview ↗</a></div>' +
+            '<p style="color:var(--muted);font-size:13px;margin-top:10px;word-break:break-all">' + (s.judgeSignupCode ? esc(base + '?code=' + s.judgeSignupCode) : 'Set an invite code and save to get an invite link.') + '</p></div>' +
+            '<h2 style="font-family:var(--body);font-size:16px;margin:0 0 10px">Sign-ups' + (pending.length ? ' <span class="tag gold">' + pending.length + ' waiting for approval</span>' : '') + '</h2>' +
+            '<div class="tbl-wrap" style="margin-bottom:28px">' + (S.signups.length ? '<table class="tbl"><thead><tr><th>Name</th><th>From</th><th>Would like to judge</th><th>Status</th><th>Signed up</th><th></th></tr></thead><tbody>' +
+                S.signups.slice().sort(function (a, b) { return (a.status === 'pending' ? 0 : 1) - (b.status === 'pending' ? 0 : 1) || a.name.localeCompare(b.name); }).map(function (j) {
+                    return '<tr class="click" data-signup="' + j.$id + '"><td><b>' + esc(j.name) + '</b><small>' + esc(j.email) + '</small></td><td>' + esc(j.affiliation) + '<small>' + esc(j.role) + '</small></td>' +
+                        '<td>' + esc((j.divisions || []).map(function (d) { return d.replace('-', '–'); }).join(', ') || 'Any division') + '<small>' + esc((j.tracks || []).join(', ') || 'Any track') + '</small></td>' +
+                        '<td>' + (j.status === 'approved' ? '<span class="tag green">approved</span>' : j.status === 'declined' ? '<span class="tag red">declined</span>' : '<span class="tag gold">pending</span>') + '</td><td>' + esc(X.fmtDate(j.$createdAt)) + '</td>' +
+                        '<td class="num">' + (j.status !== 'approved' ? '<button class="pbtn sm primary" data-approve="' + j.$id + '">Approve</button> ' : '') + (j.status !== 'declined' ? '<button class="pbtn sm danger" data-decline="' + j.$id + '">' + (j.status === 'approved' ? 'Remove' : 'Decline') + '</button>' : '') + '</td></tr>';
+                }).join('') + '</tbody></table>' : '<div class="empty">No one has signed up yet. Share the invite link above.</div>') + '</div>';
+        main.innerHTML = head('Judges &amp; admins', 'Volunteers sign themselves up from the judge sign-up page; you can also invite someone directly by email.') + signupPanel +
+            '<div class="panel"><h2>Invite a judge directly</h2><div class="toolbar" style="margin:0"><input type="search" id="j-name" placeholder="Name" style="max-width:220px"><input type="search" id="j-email" placeholder="Email" style="max-width:280px"><button class="pbtn primary" id="j-invite">Send invitation</button></div></div>' +
             '<h2 style="font-family:var(--body);font-size:16px;margin:0 0 10px">Judges</h2>' + table(S.judges.filter(function (m) { return m.roles.indexOf('owner') === -1; }), 'judges') +
             '<div class="panel" style="margin-top:28px"><h2>Invite another organizer <small>full access to everything here</small></h2><div class="toolbar" style="margin:0"><input type="search" id="a-name" placeholder="Name" style="max-width:220px"><input type="search" id="a-email" placeholder="Email" style="max-width:280px"><button class="pbtn" id="a-invite">Send invitation</button></div><p style="color:var(--muted);font-size:13.5px;margin-top:10px">They receive two emails (organizer access, and permission to manage judges) and should accept both.</p></div>' +
             '<h2 style="font-family:var(--body);font-size:16px;margin:0 0 10px">Organizers</h2>' + table(S.admins, 'admins');
 
+
+        $('#js-gen').addEventListener('click', function () { var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', c = 'JUDGE-'; for (var i = 0; i < 6; i++) c += a.charAt(Math.floor(Math.random() * a.length)); $('#js-code').value = c; });
+        $('#js-save').addEventListener('click', function () {
+            X.updateRow(T.set, sid(), { judgeSignupCode: $('#js-code').value.trim() || null, judgeDiscordUrl: $('#js-discord').value.trim() || null, judgeCommitment: $('#js-commit').value.trim() || null, judgeSignupOpen: $('#js-open').checked })
+                .then(function (row) { S.settings = row; X.toast('Saved.'); route(); }, X.fail);
+        });
+        var copy = function (text, note) { navigator.clipboard.writeText(text).then(function () { X.toast(note); }, X.fail); };
+        $('#js-copy').addEventListener('click', function () { copy(base + '?code=' + encodeURIComponent(S.settings.judgeSignupCode), 'Invite link copied. Anyone who signs up with it is approved at once.'); });
+        $('#js-copy-plain').addEventListener('click', function () { copy(base, 'Plain link copied. Sign-ups from it wait for your approval.'); });
+        function setStatus(id, status) {
+            return X.callFn({ action: 'setJudgeStatus', id: id, status: status }).then(function (r) {
+                if (!r.ok) throw new Error(r.message);
+                return Promise.all([X.listAll(T.judge, X.inSeason(sid())).then(function (l) { S.signups = l; }), loadPeople()]);
+            }).then(function () { X.toast(status === 'approved' ? 'Approved. They can sign in now, and we emailed them.' : 'Done. Their portal access is removed.'); route(); }, X.fail);
+        }
+        $$('[data-approve]').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); b.disabled = true; setStatus(b.getAttribute('data-approve'), 'approved'); }); });
+        $$('[data-decline]').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); if (!confirm('Remove this person from judging? They will lose access to the judge portal.')) return; b.disabled = true; setStatus(b.getAttribute('data-decline'), 'declined'); }); });
+        $$('[data-signup]').forEach(function (tr) {
+            tr.addEventListener('click', function () {
+                var j = byId(S.signups, tr.getAttribute('data-signup'));
+                openDrawer('<h2>' + esc(j.name) + '</h2><p class="sub">' + esc(j.role) + ' · ' + esc(j.affiliation) + '</p><dl class="kv"><dt>Email</dt><dd><a href="mailto:' + esc(j.email) + '">' + esc(j.email) + '</a></dd><dt>Phone</dt><dd>' + esc(j.phone || '—') + '</dd>' +
+                    '<dt>Divisions</dt><dd>' + esc((j.divisions || []).join(', ') || 'Any') + '</dd><dt>Tracks</dt><dd>' + esc((j.tracks || []).join(', ') || 'Any') + '</dd><dt>Knows students</dt><dd>' + esc(j.conflicts || '—') + '</dd><dt>Status</dt><dd>' + esc(j.status) + '</dd></dl>' +
+                    (j.background ? '<div class="sect">Background</div><div class="prose">' + esc(j.background) + '</div>' : ''));
+            });
+        });
         var url = X.siteBase() + 'portal/';
         function invite(team, roles, name, email) {
             return X.teams.createMembership({ teamId: team, roles: roles, email: email, name: name || undefined, url: url });

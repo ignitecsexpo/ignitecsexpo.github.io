@@ -7,8 +7,8 @@
     <title>Sign in — IgniteAI Expo Portal</title>
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../css/expo.css?v=p7" rel="stylesheet">
-    <link href="portal.css?v=p7" rel="stylesheet">
+    <link href="../css/expo.css?v=p8" rel="stylesheet">
+    <link href="portal.css?v=p8" rel="stylesheet">
 </head>
 <body class="portal">
 
@@ -55,7 +55,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/appwrite@27.0.0/dist/iife/sdk.js"></script>
-<script src="common.js?v=p7"></script>
+<script src="common.js?v=p8"></script>
 <script>
 (function () {
     'use strict';
@@ -72,7 +72,12 @@
         return EXPO.me().then(function (m) {
             if (m.isAdmin) location.href = 'admin.html';
             else if (m.isJudge) location.href = 'judge.html';
-            else { show('v-login'); msg('login-msg', 'This account has not been given portal access yet. Ask an Expo organizer to invite you.'); }
+            else return EXPO.callFn({ action: 'judgeStatus' }).catch(function () { return {}; }).then(function (r) {
+                show('v-login');
+                if (r.status === 'pending') msg('login-msg', 'Thanks for signing up to judge! An organizer still needs to approve your account. We will email you as soon as it is switched on.', true);
+                else if (r.status === 'declined') msg('login-msg', 'This account does not have portal access. Please contact the organizers if you think that is a mistake.');
+                else $('#login-msg').innerHTML = 'This account does not have portal access yet. Want to judge? <a href="../judge-signup.html" style="text-decoration:underline">Sign up here</a>.';
+            });
         });
     }
 

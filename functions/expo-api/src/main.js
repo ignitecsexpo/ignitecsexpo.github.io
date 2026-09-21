@@ -1,6 +1,10 @@
 // IgniteAI Expo — server function.
 //   POST {action:"register", data:{...}}             anyone   submit an application -> entry number
 //   POST {action:"getCertificate", id}               anyone   one certificate, by its private id
+//   POST {action:"judgeInfo"}                        anyone   what the judge sign-up page shows
+//   POST {action:"judgeSignup", data:{...}, code}    signed-in  save a judge profile; right code -> approved at once
+//   POST {action:"judgeStatus"}                      signed-in  has my sign-up been approved?
+//   POST {action:"setJudgeStatus", id, status}       admins   approve / decline a sign-up
 //   POST {action:"emailStatus"}                      admins   is SMTP configured?
 //   POST {action:"listPeople"}                       admins   judges + admins with names and emails
 //   POST {action:"sendEmails", messages:[...]}       admins   send up to 15 emails per call
@@ -153,6 +157,64 @@ export default async ({ req, res, log, error }) => {
         return { status: 200, body: { ok: true, entryNumber: data.entryNumber, season: season.$id, seasonName: season.name, firstName: data.firstName, emailed } };
     }
 
+
+    // ---------------------------------------------------------------- judges
+    const DEFAULT_COMMITMENT = 'About 1–2 hours on Zoom, interviewing 6–8 student projects (5–10 minutes each) and scoring them in the judge portal.';
+    const myJudgeRow = async (seasonId, userId) => {
+        const r = await api(rows('judges') + '?' + q({ method: 'equal', attribute: 'season', values: [seasonId] }) + '&' + q({ method: 'equal', attribute: 'userId', values: [userId] }) + '&' + q({ method: 'limit', values: [1] }));
+        return r.rows[0] || null;
+    };
+    const addToJudgesTeam = async (userId) => {
+        const m = await api('/teams/judges/memberships?' + q({ method: 'equal', attribute: 'userId', values: [userId] }));
+        if ((m.memberships || []).some((x) => x.userId === userId)) return;
+        await api('/teams/judges/memberships', 'POST', { userId, roles: ['judge'] });
+    };
+    const welcomeJudge = async (season, cfg, row) => {
+        if (!smtpReady()) return;
+        try {
+            const site = (cfg.siteUrl || 'https://igniteaiexpo.org').replace(/\/$/, '');
+            await send(transport(), cfg, {
+                to: row.email, subject: `You're confirmed as a judge for ${season.name}`,
+                text: `Hello ${row.name.split(/\s+/)[0]},\n\nThank you for volunteering — you are confirmed as a judge for ${season.name}.\n\n` +
+                    (cfg.interviewDate ? `When: ${cfg.interviewDate}\nWhere: Zoom (links will be sent before the event)\n\n` : '') +
+                    `Your judge portal: ${site}/portal/\nSign in with the email and password you chose. Your assigned projects will appear there before interview day, along with the judging guide.\n\n` +
+                    (cfg.judgeDiscordUrl ? `Please join the judges' Discord group for updates and questions:\n${cfg.judgeDiscordUrl}\n\n` : '') +
+                    `Questions? Just reply to this email.\n\nThe IgniteAI Expo team`
+            }, season.name);
+        } catch (e) { error('judge welcome email failed: ' + (e.message || e)); }
+    };
+
+    async function judgeSignup(userId, input, code) {
+        const bad = (message) => ({ status: 400, body: { ok: false, message } });
+        const season = await currentSeason();
+        if (!season) return { status: 503, body: { ok: false, message: 'Judge sign-up is not open yet.' } };
+        const cfg = await settingsOf(season.$id);
+        if (cfg.judgeSignupOpen === false) return { status: 403, body: { ok: false, message: 'Judge sign-up is closed for ' + season.name + '.' } };
+        const user = await api('/users/' + userId);
+        input = input || {};
+        const list = (v, allowed, max) => (Array.isArray(v) ? v : []).filter((x) => allowed.includes(x)).slice(0, max);
+        const data = {
+            season: season.$id, userId, name: str(input.name, 120) || user.name, email: user.email, phone: str(input.phone, 40),
+            affiliation: str(input.affiliation, 160), role: str(input.role, 60), background: str(input.background, 1500),
+            tracks: list(input.tracks, TRACKS, 10), divisions: list(input.divisions, ['K-3', '4-6', '7-8', '9-12'], 4),
+            conflicts: str(input.conflicts, 600), agreed: input.agreed === true
+        };
+        if (!data.name || !data.affiliation || !data.role) return bad('Please fill in your name, affiliation and role.');
+        if (!data.agreed) return bad('Please confirm you can take part.');
+
+        const existing = await myJudgeRow(season.$id, userId);
+        const approved = (existing && existing.status === 'approved') || (!!cfg.judgeSignupCode && String(code || '').trim() === cfg.judgeSignupCode);
+        data.status = approved ? 'approved' : (existing ? existing.status : 'pending');
+        const row = existing ? await api(rows('judges') + '/' + existing.$id, 'PATCH', { data }) : await api(rows('judges'), 'POST', { rowId: 'unique()', data });
+        if (data.name && data.name !== user.name) { try { await api('/users/' + userId + '/name', 'PATCH', { name: data.name }); } catch (e) { /* cosmetic */ } }
+        if (approved) {
+            await addToJudgesTeam(userId);
+            if (!existing || existing.status !== 'approved') await welcomeJudge(season, cfg, row);
+        }
+        log(`judge sign-up ${row.$id} ${data.status}`);
+        return { status: 200, body: { ok: true, status: data.status, seasonName: season.name, discordUrl: approved ? (cfg.judgeDiscordUrl || null) : null } };
+    }
+
     try {
         const body = req.bodyJson || {};
 
@@ -175,6 +237,25 @@ export default async ({ req, res, log, error }) => {
             }
         }
 
+        // ---- Public: what the judge sign-up page shows (no private links in here) ----
+        if (body.action === 'judgeInfo') {
+            const season = await currentSeason();
+            if (!season) return res.json({ ok: true, open: false });
+            const cfg = await settingsOf(season.$id);
+            return res.json({ ok: true, open: cfg.judgeSignupOpen !== false, seasonName: season.name, interviewDate: cfg.interviewDate || null,
+                commitment: cfg.judgeCommitment || DEFAULT_COMMITMENT, codeValid: !!cfg.judgeSignupCode && String(body.code || '').trim() === cfg.judgeSignupCode });
+        }
+
+        // ---- Signed-in (any account): judge sign-up ----
+        if (body.action === 'judgeSignup' || body.action === 'judgeStatus') {
+            const uid = req.headers['x-appwrite-user-id'];
+            if (!uid) return res.json({ ok: false, message: 'Please sign in first.' }, 401);
+            if (body.action === 'judgeSignup') { const out = await judgeSignup(uid, body.data, body.code); return res.json(out.body, out.status); }
+            const season = await currentSeason();
+            const row = season ? await myJudgeRow(season.$id, uid) : null;
+            return res.json({ ok: true, status: row ? row.status : null, seasonName: season ? season.name : null });
+        }
+
         // ---- Everything below is admins only ----
         const userId = req.headers['x-appwrite-user-id'];
         if (!userId) return res.json({ ok: false, message: 'Sign in required.' }, 401);
@@ -190,6 +271,21 @@ export default async ({ req, res, log, error }) => {
             const lim = q({ method: 'limit', values: [200] });
             const [judges, admins] = await Promise.all([api('/teams/judges/memberships?' + lim), api('/teams/admins/memberships?' + lim)]);
             return res.json({ ok: true, judges: pick(judges), admins: pick(admins) });
+        }
+
+        if (body.action === 'setJudgeStatus') {
+            if (!['approved', 'declined', 'pending'].includes(body.status)) return res.json({ ok: false, message: 'Bad status.' }, 400);
+            const row = await api(rows('judges') + '/' + String(body.id || ''));
+            const updated = await api(rows('judges') + '/' + row.$id, 'PATCH', { data: { status: body.status } });
+            if (body.status === 'approved') {
+                await addToJudgesTeam(row.userId);
+                if (row.status !== 'approved') { const season = await api(rows('seasons') + '/' + row.season); await welcomeJudge(season, await settingsOf(row.season), row); }
+            } else {
+                // losing approval also removes portal access
+                const m = await api('/teams/judges/memberships?' + q({ method: 'equal', attribute: 'userId', values: [row.userId] }));
+                for (const x of (m.memberships || [])) if (x.userId === row.userId && !(x.roles || []).includes('owner')) await api('/teams/judges/memberships/' + x.$id, 'DELETE');
+            }
+            return res.json({ ok: true, row: updated });
         }
 
         if (body.action === 'emailStatus') {

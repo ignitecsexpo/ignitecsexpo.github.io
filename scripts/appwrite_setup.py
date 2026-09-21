@@ -80,6 +80,10 @@ def col(tid, kind, key, **kw):
     body = {"key": key, "required": kw.pop("required", False)}
     body.update(kw)
     s, r = api("POST", f"/tablesdb/{DB}/tables/{tid}/columns/{kind}", body)
+    # On a re-run, a table that is near its size limit answers 400 "maximum size reached"
+    # for a column that already exists, instead of 409. Treat that as "exists".
+    if s == 400 and api("GET", f"/tablesdb/{DB}/tables/{tid}/columns/{key}")[0] == 200:
+        s = 409
     step(f"  {tid}.{key}", s, r)
 
 
@@ -124,6 +128,10 @@ for k, size in (("signerName", 120), ("signerTitle", 160), ("issuedOn", 40), ("i
     string(T, k, size)
 col(T, "boolean", "autoConfirmEmail", default=True)
 col(T, "integer", "nextEntryNumber", default=1000)   # taken atomically by the expo-api function
+col(T, "boolean", "judgeSignupOpen", default=True)
+string(T, "judgeSignupCode", 40)     # people who sign up with this code are approved instantly
+string(T, "judgeDiscordUrl", 300)    # shown to judges only after they are approved
+string(T, "judgeCommitment", 400)    # e.g. "1–2 hours, interviewing 6–8 projects on Zoom"
 
 print("== registrations (written only by the expo-api function, so numbering + deadline are enforced)")
 T = "registrations"
@@ -153,6 +161,23 @@ col(T, "boolean", "agreedToRules"); col(T, "boolean", "parentApproved")
 col(T, "enum", "status", elements=["new", "accepted", "rejected", "withdrawn"], default="new")
 string(T, "adminNotes", 2000)
 string(T, "projectId", 36)
+
+print("== judges (sign-up profiles, one per person per season; written by the expo-api function)")
+T = "judges"
+table(T, "Judges", perms(**ADMIN_ALL))
+string(T, "season", 36, required=True)
+string(T, "userId", 36, required=True)
+string(T, "name", 120, required=True)
+col(T, "email", "email", required=True)
+string(T, "phone", 40)
+string(T, "affiliation", 160)        # school, company or organization
+string(T, "role", 60)                # student, faculty, industry, ...
+string(T, "background", 1500)
+string(T, "tracks", 60, array=True)
+string(T, "divisions", 10, array=True)
+string(T, "conflicts", 600)          # students they know / should not judge
+col(T, "boolean", "agreed")
+col(T, "enum", "status", elements=["pending", "approved", "declined"], default="pending")
 
 print("== projects (what judges see: no contact details)")
 T = "projects"
@@ -253,6 +278,8 @@ index("reviews", "one_review_per_judge", ["projectId", "judgeId"], kind="unique"
 index("results", "by_season", ["season", "division", "sort"])
 index("certificates", "by_season", ["season"])
 index("notifications", "by_season", ["season"])
+index("judges", "by_season", ["season", "status"])
+index("judges", "one_signup_per_season", ["season", "userId"], kind="unique")
 
 print("== first season")
 SEASON = os.environ.get("SEASON_ID", "2026")

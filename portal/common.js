@@ -9,7 +9,7 @@ var EXPO = (function () {
         fn: 'expo-api',
         T: {
             season: 'seasons', reg: 'registrations', proj: 'projects', rev: 'reviews', res: 'results',
-            cert: 'certificates', notif: 'notifications', set: 'settings'
+            cert: 'certificates', notif: 'notifications', set: 'settings', judge: 'judges'
         },
         TRACKS: ['Artificial Intelligence', 'Data Science', 'Business & Entrepreneurship', 'Game & Animation', 'Robotics',
             'Hardware & Electronics', 'Mobile & Web', 'Algorithms', 'Cyber Security', 'Software & Systems'],

@@ -9,7 +9,7 @@ BODY=$(cat <<JSON
 {"functionId":"$FN","name":"Expo API","runtime":"${RUNTIME:-node-22}","execute":["any"],
  "events":[],
  "timeout":60,"enabled":true,"logging":true,"entrypoint":"src/main.js","commands":"npm install",
- "scopes":["rows.read","rows.write","tables.read","databases.read","teams.read"]}
+ "scopes":["rows.read","rows.write","tables.read","databases.read","teams.read","teams.write","users.read","users.write"]}
 JSON
 )
 echo "== function"
