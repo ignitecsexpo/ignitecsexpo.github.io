@@ -290,7 +290,7 @@ step(f"season {SEASON}", s, r)
 s, r = api("POST", f"/tablesdb/{DB}/tables/settings/rows", {"rowId": SEASON, "data": {
     "signerName": "", "signerTitle": "Director, IgniteAI Expo", "issuedOn": "October 9, 2026",
     "interviewDate": "Sunday, October 4, 2026, 9:30 – 11:30 AM PT",
-    "fromName": "IgniteAI Expo", "replyTo": "ignite@cpp.edu", "siteUrl": "https://igniteaiexpo.org",
+    "fromName": "IgniteAI Expo", "replyTo": "hello@mail.igniteaiexpo.org", "siteUrl": "https://igniteaiexpo.org",
     "autoConfirmEmail": True, "nextEntryNumber": 1000}})
 step(f"settings {SEASON}", s, r)
 

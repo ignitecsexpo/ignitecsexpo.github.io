@@ -38,7 +38,7 @@
             if (!season) return;
             var due = season.applyDeadline ? new Date(season.applyDeadline) : null;
             if (season.registrationOpen === false || (due && new Date() > due)) {
-                closeForm('Applications for ' + season.name + ' are closed. Questions? Email <a href="mailto:ignite@cpp.edu" style="color:var(--accent)">ignite@cpp.edu</a>.');
+                closeForm('Applications for ' + season.name + ' are closed. Questions? Email <a href="mailto:hello@mail.igniteaiexpo.org" style="color:var(--accent)">hello@mail.igniteaiexpo.org</a>.');
             }
         }).catch(function () { /* the server still enforces the deadline on submit */ });
 
@@ -216,7 +216,7 @@
         }).catch(function (err) {
             submitBtn.disabled = false;
             submitBtn.firstChild.textContent = 'Submit application ';
-            msg.textContent = 'Sorry, we could not submit your application. Your answers are still here — please try again, or email ignite@cpp.edu. (' + err.message + ')';
+            msg.textContent = 'Sorry, we could not submit your application. Your answers are still here — please try again, or email hello@mail.igniteaiexpo.org. (' + err.message + ')';
         });
     });
 })();
