@@ -7,7 +7,7 @@
     // Times are Pacific (PDT = UTC-7 through Nov 1, 2026).
     // ---------------------------------------------------------------
     var APPLY_URL = 'register.html'; // Application form (Appwrite-backed, see js/register.js)
-    var DEADLINE  = new Date('2026-09-27T23:59:00-07:00'); // Application due
+    var DEADLINE  = new Date('2026-10-01T23:59:00-07:00'); // Application due
     var INTERVIEW = new Date('2026-10-04T09:30:00-07:00'); // Final interview check-in
     var INTERVIEW_END = new Date('2026-10-04T11:30:00-07:00');
     var AWARDS    = new Date('2026-10-09T00:00:00-07:00'); // Award announcement day
