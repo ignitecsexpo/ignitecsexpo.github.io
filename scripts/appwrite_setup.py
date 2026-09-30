@@ -132,6 +132,8 @@ col(T, "boolean", "judgeSignupOpen", default=True)
 string(T, "judgeSignupCode", 40)     # people who sign up with this code are approved instantly
 string(T, "judgeDiscordUrl", 300)    # shown to judges only after they are approved
 string(T, "judgeCommitment", 400)    # e.g. "1–2 hours, interviewing 6–8 projects on Zoom"
+string(T, "judgeZoomUrl", 500)       # judges' briefing room, shown in the judge portal
+string(T, "judgeNotes", 2000)        # organizers' note to judges, shown in the judge portal
 
 print("== registrations (written only by the expo-api function, so numbering + deadline are enforced)")
 T = "registrations"
@@ -210,11 +212,15 @@ string(T, "season", 36, required=True)
 string(T, "projectId", 36, required=True)
 string(T, "judgeId", 36, required=True)
 string(T, "judgeName", 120)
+# The rubric (see CRITERIA in portal/common.js): three scores 1-10, total out of 30.
+for k in ("scoreTechnical", "scoreIdea", "scorePresentation"):
+    col(T, "integer", k, min=1, max=10)
+# 2026 launch rubric, kept so older rows still load
 for k in ("scoreDemo", "scoreUnderstanding", "scoreUsefulness", "scoreCreativity"):
     col(T, "integer", k, min=0, max=10)
 col(T, "integer", "total", min=0, max=40)
-string(T, "comments", 4000)
-string(T, "privateNotes", 2000)
+string(T, "comments", 4000)       # public: shared with the students
+string(T, "privateNotes", 2000)   # private: judges + organizers only
 col(T, "enum", "recommendation", elements=["award", "strong", "solid", "developing"])
 col(T, "boolean", "submitted", default=False)
 

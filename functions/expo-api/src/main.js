@@ -1,9 +1,11 @@
 // IgniteAI Expo — server function.
 //   POST {action:"register", data:{...}}             anyone   submit an application -> entry number
 //   POST {action:"getCertificate", id}               anyone   one certificate, by its private id
-//   POST {action:"judgeInfo"}                        anyone   what the judge sign-up page shows
-//   POST {action:"judgeSignup", data:{...}, code}    signed-in  save a judge profile; right code -> approved at once
+//   POST {action:"judgeInfo", season?, code}         anyone   what the judge sign-up page shows
+//   POST {action:"judgeSignup", season?, data, code} signed-in  save a judge profile; right code -> approved at once
 //   POST {action:"judgeStatus"}                      signed-in  has my sign-up been approved?
+//   POST {action:"judgeHome", season?}               judges   my contests, event info (Zoom, Discord), review counts
+//   POST {action:"projectReviews", projectId}        judges   every judge's review of a project, once I have reviewed it
 //   POST {action:"setJudgeStatus", id, status}       admins   approve / decline a sign-up
 //   POST {action:"emailStatus"}                      admins   is SMTP configured?
 //   POST {action:"listPeople"}                       admins   judges + admins with names and emails
@@ -50,6 +52,12 @@ export default async ({ req, res, log, error }) => {
     const currentSeason = async () => {
         const r = await api(rows('seasons') + '?' + q({ method: 'equal', attribute: 'isCurrent', values: [true] }) + '&' + q({ method: 'limit', values: [1] }));
         return r.rows[0] || null;
+    };
+    // A judge invite link names its contest (season id); without one, the current season is meant.
+    const seasonById = async (id) => {
+        if (!id) return currentSeason();
+        if (!/^[A-Za-z0-9_.-]{1,36}$/.test(String(id))) return null;
+        try { return await api(rows('seasons') + '/' + id); } catch (e) { return null; }
     };
     const settingsOf = async (seasonId) => { try { return await api(rows('settings') + '/' + seasonId); } catch (e) { return {}; } };
 
@@ -177,16 +185,16 @@ export default async ({ req, res, log, error }) => {
                 to: row.email, subject: `You're confirmed as a judge for ${season.name}`,
                 text: `Hello ${row.name.split(/\s+/)[0]},\n\nThank you for volunteering — you are confirmed as a judge for ${season.name}.\n\n` +
                     (cfg.interviewDate ? `When: ${cfg.interviewDate}\nWhere: Zoom (links will be sent before the event)\n\n` : '') +
-                    `Your judge portal: ${site}/portal/\nSign in with the email and password you chose. Your assigned projects will appear there before interview day, along with the judging guide.\n\n` +
+                    `Your judge portal: ${site}/portal/\nSign in with the email and password you chose (or with Google, if you signed up that way). You will find every project in the contest there, the scoring form, the judging guide and the Zoom links.\n\n` +
                     (cfg.judgeDiscordUrl ? `Please join the judges' Discord group for updates and questions:\n${cfg.judgeDiscordUrl}\n\n` : '') +
                     `Questions? Just reply to this email.\n\nThe IgniteAI Expo team`
             }, season.name);
         } catch (e) { error('judge welcome email failed: ' + (e.message || e)); }
     };
 
-    async function judgeSignup(userId, input, code) {
+    async function judgeSignup(userId, input, code, seasonId) {
         const bad = (message) => ({ status: 400, body: { ok: false, message } });
-        const season = await currentSeason();
+        const season = await seasonById(seasonId);
         if (!season) return { status: 503, body: { ok: false, message: 'Judge sign-up is not open yet.' } };
         const cfg = await settingsOf(season.$id);
         if (cfg.judgeSignupOpen === false) return { status: 403, body: { ok: false, message: 'Judge sign-up is closed for ' + season.name + '.' } };
@@ -212,7 +220,70 @@ export default async ({ req, res, log, error }) => {
             if (!existing || existing.status !== 'approved') await welcomeJudge(season, cfg, row);
         }
         log(`judge sign-up ${row.$id} ${data.status}`);
-        return { status: 200, body: { ok: true, status: data.status, seasonName: season.name, discordUrl: approved ? (cfg.judgeDiscordUrl || null) : null } };
+        return { status: 200, body: { ok: true, status: data.status, season: season.$id, seasonName: season.name, discordUrl: approved ? (cfg.judgeDiscordUrl || null) : null } };
+    }
+
+    const inTeam = async (team, userId) => {
+        const m = await api(`/teams/${team}/memberships?` + q({ method: 'equal', attribute: 'userId', values: [userId] }));
+        return (m.memberships || []).some((x) => x.userId === userId && x.confirm);
+    };
+    const listAllRows = async (table, queries) => {
+        let out = [], cursor = null;
+        for (;;) {
+            const qs = queries.concat([q({ method: 'limit', values: [100] })]);
+            if (cursor) qs.push(q({ method: 'cursorAfter', values: [cursor] }));
+            const r = await api(rows(table) + '?' + qs.join('&'));
+            out = out.concat(r.rows);
+            if (r.rows.length < 100) return out;
+            cursor = r.rows[r.rows.length - 1].$id;
+        }
+    };
+    // Which contests (seasons) may this person judge? Admins: all of them. Judges: every season they
+    // were approved for through the sign-up page. Someone an admin invited straight into the judges
+    // team has no approved sign-up, so they get the current season.
+    const judgeAccess = async (userId) => {
+        const [isAdmin, isJudge] = await Promise.all([inTeam('admins', userId), inTeam('judges', userId)]);
+        if (!isAdmin && !isJudge) return null;
+        const seasons = await listAllRows('seasons', [q({ method: 'orderDesc', attribute: 'year' })]);
+        if (isAdmin) return { isAdmin, seasons };
+        const mine = await listAllRows('judges', [q({ method: 'equal', attribute: 'userId', values: [userId] })]);
+        const ok = mine.filter((j) => j.status === 'approved').map((j) => j.season);
+        const list = ok.length ? seasons.filter((x) => ok.includes(x.$id)) : seasons.filter((x) => x.isCurrent);
+        return { isAdmin, seasons: list };
+    };
+    const reviewView = (v) => ({ $id: v.$id, judgeId: v.judgeId, judgeName: v.judgeName, scoreTechnical: v.scoreTechnical, scoreIdea: v.scoreIdea,
+        scorePresentation: v.scorePresentation, total: v.total, comments: v.comments, privateNotes: v.privateNotes, updatedAt: v.$updatedAt });
+
+    async function judgeHome(userId, seasonId) {
+        const acc = await judgeAccess(userId);
+        if (!acc) return { status: 403, body: { ok: false, message: 'This account is not a judge.' } };
+        const contests = acc.seasons.map((x) => ({ id: x.$id, name: x.name, year: x.year, isCurrent: !!x.isCurrent }));
+        const season = acc.seasons.find((x) => x.$id === seasonId) || acc.seasons.find((x) => x.isCurrent) || acc.seasons[0];
+        if (!season) return { status: 200, body: { ok: true, isAdmin: acc.isAdmin, contests: [], season: null } };
+        const cfg = await settingsOf(season.$id);
+        const reviews = await listAllRows('reviews', [q({ method: 'equal', attribute: 'season', values: [season.$id] }), q({ method: 'equal', attribute: 'submitted', values: [true] }),
+            q({ method: 'select', values: ['projectId', 'judgeId'] })]);
+        const counts = {};
+        for (const v of reviews) counts[v.projectId] = (counts[v.projectId] || 0) + 1;
+        return { status: 200, body: { ok: true, isAdmin: acc.isAdmin, contests, season: season.$id, counts, info: {
+            name: season.name, interviewDate: cfg.interviewDate || null, judgeZoomUrl: cfg.judgeZoomUrl || null, discordUrl: cfg.judgeDiscordUrl || null,
+            notes: cfg.judgeNotes || null, contactEmail: cfg.replyTo || null,
+            rooms: [['K-3', cfg.zoomK3], ['4-6', cfg.zoom46], ['7-8', cfg.zoom78], ['9-12', cfg.zoom912]].filter((r) => r[1]).map((r) => ({ division: r[0], url: r[1] }))
+        } } };
+    }
+
+    // Other judges' reviews stay hidden until you have submitted your own, so nobody is anchored by them.
+    async function projectReviews(userId, projectId) {
+        if (!/^[A-Za-z0-9_.-]{1,36}$/.test(String(projectId || ''))) return { status: 400, body: { ok: false, message: 'Bad project id.' } };
+        const acc = await judgeAccess(userId);
+        if (!acc) return { status: 403, body: { ok: false, message: 'This account is not a judge.' } };
+        let p;
+        try { p = await api(rows('projects') + '/' + projectId); } catch (e) { return { status: 404, body: { ok: false, message: 'Project not found.' } }; }
+        if (!acc.seasons.some((x) => x.$id === p.season)) return { status: 403, body: { ok: false, message: 'You are not judging this contest.' } };
+        const all = (await listAllRows('reviews', [q({ method: 'equal', attribute: 'projectId', values: [p.$id] })])).filter((v) => v.submitted);
+        const mineDone = all.some((v) => v.judgeId === userId);
+        if (!mineDone && !acc.isAdmin) return { status: 200, body: { ok: true, locked: true, count: all.length } };
+        return { status: 200, body: { ok: true, locked: false, count: all.length, reviews: all.filter((v) => v.judgeId !== userId).map(reviewView) } };
     }
 
     try {
@@ -239,30 +310,32 @@ export default async ({ req, res, log, error }) => {
 
         // ---- Public: what the judge sign-up page shows (no private links in here) ----
         if (body.action === 'judgeInfo') {
-            const season = await currentSeason();
-            if (!season) return res.json({ ok: true, open: false });
+            const season = await seasonById(body.season);
+            if (!season) return res.json({ ok: true, open: false, unknown: !!body.season });
             const cfg = await settingsOf(season.$id);
-            return res.json({ ok: true, open: cfg.judgeSignupOpen !== false, seasonName: season.name, interviewDate: cfg.interviewDate || null,
+            return res.json({ ok: true, open: cfg.judgeSignupOpen !== false, season: season.$id, seasonName: season.name, interviewDate: cfg.interviewDate || null,
                 commitment: cfg.judgeCommitment || DEFAULT_COMMITMENT, codeValid: !!cfg.judgeSignupCode && String(body.code || '').trim() === cfg.judgeSignupCode });
         }
 
         // ---- Signed-in (any account): judge sign-up ----
-        if (body.action === 'judgeSignup' || body.action === 'judgeStatus') {
+        if (['judgeSignup', 'judgeStatus', 'judgeHome', 'projectReviews'].includes(body.action)) {
             const uid = req.headers['x-appwrite-user-id'];
             if (!uid) return res.json({ ok: false, message: 'Please sign in first.' }, 401);
-            if (body.action === 'judgeSignup') { const out = await judgeSignup(uid, body.data, body.code); return res.json(out.body, out.status); }
-            const season = await currentSeason();
-            const row = season ? await myJudgeRow(season.$id, uid) : null;
-            return res.json({ ok: true, status: row ? row.status : null, seasonName: season ? season.name : null });
+            let out;
+            if (body.action === 'judgeSignup') out = await judgeSignup(uid, body.data, body.code, body.season);
+            else if (body.action === 'judgeHome') out = await judgeHome(uid, body.season);
+            else if (body.action === 'projectReviews') out = await projectReviews(uid, body.projectId);
+            if (out) return res.json(out.body, out.status);
+            // judgeStatus: the most recent sign-up, in any contest
+            const mine = await listAllRows('judges', [q({ method: 'equal', attribute: 'userId', values: [uid] }), q({ method: 'orderDesc', attribute: '$createdAt' })]);
+            const row = mine.find((j) => j.status === 'approved') || mine[0] || null;
+            return res.json({ ok: true, status: row ? row.status : null });
         }
 
         // ---- Everything below is admins only ----
         const userId = req.headers['x-appwrite-user-id'];
         if (!userId) return res.json({ ok: false, message: 'Sign in required.' }, 401);
-        const m = await api(`/teams/admins/memberships?` + q({ method: 'equal', attribute: 'userId', values: [userId] }));
-        if (!(m.memberships || []).some((x) => x.userId === userId && x.confirm)) {
-            return res.json({ ok: false, message: 'Admins only.' }, 403);
-        }
+        if (!(await inTeam('admins', userId))) return res.json({ ok: false, message: 'Admins only.' }, 403);
 
         // Appwrite hides other members' ids/names/emails from browser sessions ("membership privacy"),
         // so admins get the people list from here instead.
@@ -281,7 +354,9 @@ export default async ({ req, res, log, error }) => {
                 await addToJudgesTeam(row.userId);
                 if (row.status !== 'approved') { const season = await api(rows('seasons') + '/' + row.season); await welcomeJudge(season, await settingsOf(row.season), row); }
             } else {
-                // losing approval also removes portal access
+                // losing approval also removes portal access, unless they are still approved for another contest
+                const others = await listAllRows('judges', [q({ method: 'equal', attribute: 'userId', values: [row.userId] }), q({ method: 'equal', attribute: 'status', values: ['approved'] })]);
+                if (others.some((j) => j.$id !== row.$id)) return res.json({ ok: true, row: updated });
                 const m = await api('/teams/judges/memberships?' + q({ method: 'equal', attribute: 'userId', values: [row.userId] }));
                 for (const x of (m.memberships || [])) if (x.userId === row.userId && !(x.roles || []).includes('owner')) await api('/teams/judges/memberships/' + x.$id, 'DELETE');
             }

@@ -320,7 +320,7 @@
             rowsNow = S.projects.filter(function (p) { return matches(p, filters.proj, ['entryNumber', 'title', 'members', 'teamName', 'country', 'xField']); })
                 .sort(function (a, b) { return (a.entryNumber || 0) - (b.entryNumber || 0); });
             $('#count-proj').textContent = rowsNow.length + ' of ' + S.projects.length;
-            $('#proj-table').innerHTML = rowsNow.length ? '<table class="tbl"><thead><tr><th>Entry</th><th>Project</th><th>Division</th><th>Track</th><th>Judges</th><th class="num">Reviews</th><th class="num">Avg / 40</th><th>Status</th><th>Award</th></tr></thead><tbody>' +
+            $('#proj-table').innerHTML = rowsNow.length ? '<table class="tbl"><thead><tr><th>Entry</th><th>Project</th><th>Division</th><th>Track</th><th>Judges</th><th class="num">Reviews</th><th class="num">Avg / ' + CFG.SCORE_MAX + '</th><th>Status</th><th>Award</th></tr></thead><tbody>' +
                 rowsNow.map(function (p) {
                     var rv = reviewsOf(p);
                     return '<tr class="click" data-id="' + p.$id + '"><td class="num"><b>' + (p.entryNumber || '—') + '</b></td><td><b>' + esc(p.title) + '</b><small>' + esc(p.members) + '</small></td><td>' + esc(X.divLabel(p.division)) + '</td><td>' + esc(p.track) + '</td>' +
@@ -344,11 +344,10 @@
         var all = S.reviews.filter(function (v) { return v.projectId === p.$id; });
         if (!all.length) return '<div class="note">No reviews yet.</div>';
         return all.map(function (v) {
-            return '<div class="review-card"><header><span>' + esc(v.judgeName || judgeName(v.judgeId)) + (v.submitted ? '' : ' <span class="tag">draft</span>') + '</span><span>' + (v.total == null ? '—' : v.total) + ' / 40</span></header>' +
-                '<div class="scores">Demo ' + (v.scoreDemo == null ? '—' : v.scoreDemo) + ' · Understanding ' + (v.scoreUnderstanding == null ? '—' : v.scoreUnderstanding) + ' · Usefulness ' + (v.scoreUsefulness == null ? '—' : v.scoreUsefulness) + ' · Creativity ' + (v.scoreCreativity == null ? '—' : v.scoreCreativity) +
-                (v.recommendation ? ' · <b>' + esc(v.recommendation) + '</b>' : '') + '</div>' +
-                (v.comments ? '<p>' + esc(v.comments) + '</p>' : '') +
-                (includePrivate && v.privateNotes ? '<p style="margin-top:8px;color:var(--muted)"><b>Private to committee:</b> ' + esc(v.privateNotes) + '</p>' : '') + '</div>';
+            return '<div class="review-card"><header><span>' + esc(v.judgeName || judgeName(v.judgeId)) + (v.submitted ? '' : ' <span class="tag">draft</span>') + '</span><span>' + (v.total == null ? '—' : v.total) + ' / ' + CFG.SCORE_MAX + '</span></header>' +
+                '<div class="scores">' + CFG.CRITERIA.map(function (c) { return esc(c[1]) + ' ' + (v[c[0]] == null ? '—' : v[c[0]]); }).join(' · ') + '</div>' +
+                (v.comments ? '<span class="lbl2">To the students</span><p>' + esc(v.comments) + '</p>' : '') +
+                (includePrivate && v.privateNotes ? '<span class="lbl2">Private</span><p style="color:var(--muted)">' + esc(v.privateNotes) + '</p>' : '') + '</div>';
         }).join('');
     }
 
@@ -426,16 +425,20 @@
             }).join('') + '</tbody></table></div>' : '<div class="tbl-wrap"><div class="empty">Nobody yet.</div></div>';
         }
 
-        var s = S.settings, base = (s.siteUrl || X.siteBase()).replace(/\/$/, '') + '/judge-signup.html';
+        var s = S.settings, base = (s.siteUrl || X.siteBase()).replace(/\/$/, '') + '/judge-signup.html?contest=' + encodeURIComponent(sid());
+        var inviteUrl = s.judgeSignupCode ? base + '&code=' + encodeURIComponent(s.judgeSignupCode) : '';
         var pending = S.signups.filter(function (j) { return j.status === 'pending'; });
         var signupPanel = '<div class="panel"><h2>Judge sign-up page <small>' + esc(S.season.name) + '</small></h2>' +
             '<p style="color:var(--muted);font-size:14px;margin-bottom:14px">Share the <b>invite link</b> with volunteers you trust: anyone who signs up through it is approved at once and can sign in straight away. People who find the plain page without the code land in the list below as <i>pending</i> until you approve them.</p>' +
             '<div class="frow"><div class="f"><label>Invite code</label><div style="display:flex;gap:8px"><input id="js-code" value="' + esc(s.judgeSignupCode) + '" placeholder="none yet" style="flex:1"><button class="pbtn sm" id="js-gen" type="button">New code</button></div><small>Change it to switch off a link that has spread too far.</small></div>' +
             '<div class="f"><label>Judges\' Discord invite <i style="font-weight:400;color:var(--dim)">(shown only to approved judges)</i></label><input id="js-discord" type="url" value="' + esc(s.judgeDiscordUrl) + '" placeholder="https://discord.gg/…"></div></div>' +
+            '<div class="frow"><div class="f"><label>Judges\' Zoom link <i style="font-weight:400;color:var(--dim)">(briefing / judges\' room, shown in the judge portal)</i></label><input id="js-zoom" type="url" value="' + esc(s.judgeZoomUrl) + '" placeholder="https://zoom.us/j/…"></div>' +
+            '<div class="f"><label>Note to judges <i style="font-weight:400;color:var(--dim)">(shown in the judge portal)</i></label><textarea id="js-notes" maxlength="2000" style="min-height:60px" placeholder="Schedule, which room to join, who to ask for help…">' + esc(s.judgeNotes) + '</textarea></div></div>' +
+            '<p style="color:var(--muted);font-size:13px;margin:-4px 0 14px">Judges also see the per-division interview Zoom links from Settings.</p>' +
             '<div class="f"><label>What you are asking of judges <i style="font-weight:400;color:var(--dim)">(shown on the sign-up page)</i></label><input id="js-commit" value="' + esc(s.judgeCommitment) + '" placeholder="About 1–2 hours on Zoom, interviewing 6–8 student projects (5–10 minutes each) and scoring them in the judge portal."></div>' +
             '<label style="display:flex;gap:8px;align-items:center;margin-bottom:14px"><input type="checkbox" id="js-open"' + (s.judgeSignupOpen === false ? '' : ' checked') + '> Sign-up is open</label>' +
-            '<div class="p-actions"><button class="pbtn primary" id="js-save">Save</button><button class="pbtn" id="js-copy"' + (s.judgeSignupCode ? '' : ' disabled') + '>Copy invite link</button><button class="pbtn" id="js-copy-plain">Copy plain link (needs approval)</button><a class="pbtn" href="' + esc(base + (s.judgeSignupCode ? '?code=' + encodeURIComponent(s.judgeSignupCode) : '')) + '" target="_blank">Preview ↗</a></div>' +
-            '<p style="color:var(--muted);font-size:13px;margin-top:10px;word-break:break-all">' + (s.judgeSignupCode ? esc(base + '?code=' + s.judgeSignupCode) : 'Set an invite code and save to get an invite link.') + '</p></div>' +
+            '<div class="p-actions"><button class="pbtn primary" id="js-save">Save</button><button class="pbtn" id="js-copy"' + (s.judgeSignupCode ? '' : ' disabled') + '>Copy invite link</button><button class="pbtn" id="js-copy-plain">Copy plain link (needs approval)</button><a class="pbtn" href="' + esc(inviteUrl || base) + '" target="_blank">Preview ↗</a></div>' +
+            '<p style="color:var(--muted);font-size:13px;margin-top:10px;word-break:break-all">' + (inviteUrl ? esc(inviteUrl) + '<br>This link signs people up for <b>' + esc(S.season.name) + '</b>.' : 'Set an invite code and save to get an invite link.') + '</p></div>' +
             '<h2 style="font-family:var(--body);font-size:16px;margin:0 0 10px">Sign-ups' + (pending.length ? ' <span class="tag gold">' + pending.length + ' waiting for approval</span>' : '') + '</h2>' +
             '<div class="tbl-wrap" style="margin-bottom:28px">' + (S.signups.length ? '<table class="tbl"><thead><tr><th>Name</th><th>From</th><th>Would like to judge</th><th>Status</th><th>Signed up</th><th></th></tr></thead><tbody>' +
                 S.signups.slice().sort(function (a, b) { return (a.status === 'pending' ? 0 : 1) - (b.status === 'pending' ? 0 : 1) || a.name.localeCompare(b.name); }).map(function (j) {
@@ -453,11 +456,12 @@
 
         $('#js-gen').addEventListener('click', function () { var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', c = 'JUDGE-'; for (var i = 0; i < 6; i++) c += a.charAt(Math.floor(Math.random() * a.length)); $('#js-code').value = c; });
         $('#js-save').addEventListener('click', function () {
-            X.updateRow(T.set, sid(), { judgeSignupCode: $('#js-code').value.trim() || null, judgeDiscordUrl: $('#js-discord').value.trim() || null, judgeCommitment: $('#js-commit').value.trim() || null, judgeSignupOpen: $('#js-open').checked })
+            X.updateRow(T.set, sid(), { judgeSignupCode: $('#js-code').value.trim() || null, judgeDiscordUrl: $('#js-discord').value.trim() || null, judgeCommitment: $('#js-commit').value.trim() || null, judgeSignupOpen: $('#js-open').checked,
+                judgeZoomUrl: $('#js-zoom').value.trim() || null, judgeNotes: $('#js-notes').value.trim() || null })
                 .then(function (row) { S.settings = row; X.toast('Saved.'); route(); }, X.fail);
         });
         var copy = function (text, note) { navigator.clipboard.writeText(text).then(function () { X.toast(note); }, X.fail); };
-        $('#js-copy').addEventListener('click', function () { copy(base + '?code=' + encodeURIComponent(S.settings.judgeSignupCode), 'Invite link copied. Anyone who signs up with it is approved at once.'); });
+        $('#js-copy').addEventListener('click', function () { copy(inviteUrl, 'Invite link copied. Anyone who signs up with it is approved at once.'); });
         $('#js-copy-plain').addEventListener('click', function () { copy(base, 'Plain link copied. Sign-ups from it wait for your approval.'); });
         function setStatus(id, status) {
             return X.callFn({ action: 'setJudgeStatus', id: id, status: status }).then(function (r) {
@@ -519,11 +523,11 @@
                     list.forEach(function (p) { p._rv = reviewsOf(p); p._avg = avg(p._rv, 'total'); });
                     list.sort(function (a, b) { return (b._avg == null ? -1 : b._avg) - (a._avg == null ? -1 : a._avg); });
                     html += '<div class="panel" style="padding:0;overflow:hidden"><h2 style="padding:16px 20px 0">' + esc(X.divLabel(dv)) + ' · ' + esc(tr) + '<small>' + list.length + ' project' + (list.length === 1 ? '' : 's') + '</small></h2>' +
-                        '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>#</th><th>Project</th><th class="num">Reviews</th><th class="num">Avg / 40</th><th class="num">Demo</th><th class="num">Underst.</th><th class="num">Useful</th><th class="num">Creative</th><th>Finalist</th><th>Award</th></tr></thead><tbody>' +
+                        '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>#</th><th>Project</th><th class="num">Reviews</th><th class="num">Avg / ' + CFG.SCORE_MAX + '</th>' + CFG.CRITERIA.map(function (c) { return '<th class="num">' + esc(c[1].split(' ')[0]) + '</th>'; }).join('') + '<th>Finalist</th><th>Award</th></tr></thead><tbody>' +
                         list.map(function (p, i) {
                             flat.push(p);
                             return '<tr><td>' + (p._avg == null ? '—' : i + 1) + '</td><td><a data-open="' + p.$id + '" style="cursor:pointer"><b>' + esc(p.title) + '</b></a> <span style="color:var(--muted)">#' + (p.entryNumber || '—') + '</span><small>' + esc(p.members) + '</small></td><td class="num">' + p._rv.length + ' / ' + (p.assignedJudges || []).length + '</td>' +
-                                '<td class="num"><b>' + n1(p._avg) + '</b></td><td class="num">' + n1(avg(p._rv, 'scoreDemo')) + '</td><td class="num">' + n1(avg(p._rv, 'scoreUnderstanding')) + '</td><td class="num">' + n1(avg(p._rv, 'scoreUsefulness')) + '</td><td class="num">' + n1(avg(p._rv, 'scoreCreativity')) + '</td>' +
+                                '<td class="num"><b>' + n1(p._avg) + '</b></td>' + CFG.CRITERIA.map(function (c) { return '<td class="num">' + n1(avg(p._rv, c[0])) + '</td>'; }).join('') +
                                 '<td><input type="checkbox" data-fin="' + p.$id + '"' + (p.status === 'finalist' ? ' checked' : '') + '></td>' +
                                 '<td><input data-award="' + p.$id + '" list="award-list" value="' + esc(p.award) + '" placeholder="—" style="font:inherit;font-size:13.5px;padding:5px 8px;border:1.5px solid var(--line);border-radius:6px;width:210px"></td></tr>';
                         }).join('') + '</tbody></table></div></div>';
@@ -548,15 +552,15 @@
         draw();
         $('#s-div').addEventListener('change', function () { f.division = this.value; draw(); });
         $('#s-track').addEventListener('change', function () { f.track = this.value; draw(); });
-        $('#s-refresh').addEventListener('click', function () { X.listAll(T.rev).then(function (r) { S.reviews = r; draw(); X.toast('Reviews refreshed.'); }, X.fail); });
+        $('#s-refresh').addEventListener('click', function () { X.listAll(T.rev, X.inSeason(sid())).then(function (r) { S.reviews = r; draw(); X.toast('Reviews refreshed.'); }, X.fail); });
         $('#s-csv').addEventListener('click', function () {
             var rows = [];
             flat.forEach(function (p) {
                 (p._rv.length ? p._rv : [{}]).forEach(function (v) {
-                    rows.push({ entryNumber: p.entryNumber, division: p.division, track: p.track, project: p.title, students: p.members, average: n1(p._avg), award: p.award, judge: v.judgeName, demo: v.scoreDemo, understanding: v.scoreUnderstanding, usefulness: v.scoreUsefulness, creativity: v.scoreCreativity, total: v.total, recommendation: v.recommendation, comments: v.comments, privateNotes: v.privateNotes });
+                    rows.push({ entryNumber: p.entryNumber, division: p.division, track: p.track, project: p.title, students: p.members, average: n1(p._avg), award: p.award, judge: v.judgeName, technical: v.scoreTechnical, idea: v.scoreIdea, presentation: v.scorePresentation, total: v.total, publicComment: v.comments, privateComment: v.privateNotes });
                 });
             });
-            X.download('igniteai-scores-' + sid() + '.csv', X.toCsv(rows, ['entryNumber', 'division', 'track', 'project', 'students', 'average', 'award', 'judge', 'demo', 'understanding', 'usefulness', 'creativity', 'total', 'recommendation', 'comments', 'privateNotes']), 'text/csv');
+            X.download('igniteai-scores-' + sid() + '.csv', X.toCsv(rows, ['entryNumber', 'division', 'track', 'project', 'students', 'average', 'award', 'judge', 'technical', 'idea', 'presentation', 'total', 'publicComment', 'privateComment']), 'text/csv');
         });
     };
 

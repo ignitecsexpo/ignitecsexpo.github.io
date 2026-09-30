@@ -7,17 +7,19 @@
     <title>Judging — IgniteAI Expo Portal</title>
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../css/expo.css?v=p8" rel="stylesheet">
-    <link href="portal.css?v=p8" rel="stylesheet">
+    <link href="../css/expo.css?v=p9" rel="stylesheet">
+    <link href="portal.css?v=p9" rel="stylesheet">
 </head>
 <body class="portal">
 
 <div class="p-shell" id="shell" hidden>
     <aside class="p-side">
         <a class="brand" href="../index.html" target="_blank"><span>Ignite<i>AI</i> Expo<small>Judge portal</small></span></a>
-        <label class="p-season"><span>Season</span><select id="season"></select></label>
+        <label class="p-season"><span>Contest</span><select id="season"></select></label>
         <nav class="p-nav" id="nav">
-            <a data-tab="projects" class="on">My projects <b id="n-mine"></b></a>
+            <a data-tab="projects" class="on">Projects <b id="n-all"></b></a>
+            <a data-tab="mine">My reviews <b id="n-mine"></b></a>
+            <a data-tab="info">Zoom &amp; Discord</a>
             <a data-tab="rubric">Judging guide</a>
         </nav>
         <div class="p-user">
@@ -32,7 +34,7 @@
 <div id="drawer-host"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/appwrite@27.0.0/dist/iife/sdk.js"></script>
-<script src="common.js?v=p8"></script>
-<script src="judge.js?v=p8"></script>
+<script src="common.js?v=p9"></script>
+<script src="judge.js?v=p9"></script>
 </body>
 </html>

@@ -146,3 +146,40 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 .p-season select { width: 100%; font: inherit; font-size: 14px; font-weight: 600; padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .06); color: #fff; }
 .p-season select option { color: #16181d; }
 @media (max-width: 900px) { .p-season { padding: 0; } .p-season span { display: none; } .p-season select { padding: 5px 8px; font-size: 13px; } }
+
+/* Google sign-in */
+.pbtn.google { gap: 10px; background: var(--white); border-color: var(--line); }
+.pbtn.google:hover { border-color: var(--ink); }
+.auth-or { display: flex; align-items: center; gap: 12px; color: var(--dim); font-size: 13px; margin: 18px 0 14px; }
+.auth-or::before, .auth-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+/* Judge portal */
+.j-event { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; background: var(--white); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; margin-bottom: 18px; font-size: 14px; }
+.j-event .when { font-weight: 600; margin-right: auto; }
+.j-event .when small { display: block; font-weight: 400; color: var(--muted); }
+.j-event .pbtn { text-decoration: none; }
+.j-search { position: relative; margin-bottom: 12px; }
+.j-search input { width: 100%; font: inherit; font-size: 17px; padding: 14px 16px 14px 46px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); }
+.j-search input:focus { outline: 0; border-color: var(--ink); }
+.j-search svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--dim); }
+.seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--white); }
+.seg button { font: inherit; font-size: 13.5px; font-weight: 600; padding: 7px 12px; border: 0; background: none; color: var(--muted); cursor: pointer; border-left: 1px solid var(--line); }
+.seg button:first-child { border-left: 0; }
+.seg button.on { background: var(--ink); color: #fff; }
+.seg button b { font-weight: 600; opacity: .7; margin-left: 4px; }
+.pick { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; grid-column: 1 / -1; margin-top: 6px; }
+.pick button { font: inherit; font-size: 15px; font-weight: 600; padding: 9px 0; border: 1.5px solid var(--line); border-radius: 6px; background: var(--white); color: var(--ink); cursor: pointer; }
+.pick button:hover { border-color: var(--ink); }
+.pick button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.score.missing .pick button { border-color: var(--accent); }
+.info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.info-card { background: var(--white); border: 1px solid var(--line); border-radius: 8px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px; }
+.info-card h3 { font-family: var(--body); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.info-card p { color: var(--muted); font-size: 14px; margin: 0; }
+.info-card .pbtn { align-self: flex-start; margin-top: 6px; text-decoration: none; }
+.info-card .rooms a { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid var(--line); color: var(--ink); font-size: 14px; }
+.info-card .rooms a:first-child { border-top: 0; }
+.info-card .rooms a span { color: var(--accent-dark); text-decoration: underline; }
+.lock { text-align: center; padding: 18px; color: var(--muted); font-size: 14px; background: var(--paper-alt); border-radius: 6px; }
+.review-card .lbl2 { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 8px 0 2px; }
+@media (max-width: 900px) { .pick { grid-template-columns: repeat(5, 1fr); } .j-search input { font-size: 16px; } }

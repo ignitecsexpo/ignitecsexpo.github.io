@@ -26,6 +26,14 @@ Older template pages (`blog.html`, `shortcodes.html`, …) are unused leftovers.
 Appwrite Teams `admins` and `judges`. Judges can read `projects` only — never `registrations`
 (family contact details). Each judge sees only their own rows in `reviews`. Only the function writes registrations.
 
+Judges belong to contests (seasons): the Judges tab's invite link is `judge-signup.html?contest=<season>&code=<code>`,
+and a judge sees the contests they were approved for (`judgeHome` in the function). Other judges' reviews of a
+project come from the function's `projectReviews`, and only after the judge has submitted their own. The rubric
+(three 1–10 scores, public + private comment) is `CRITERIA` in `portal/common.js`.
+
+Google sign-in needs the Google provider switched on in Appwrite (Auth → Settings → Google) with a Google OAuth
+client whose redirect URI is `https://sfo.cloud.appwrite.io/v1/account/sessions/oauth2/callback/google/<project id>`.
+
 ## A new season (each year)
 
 1. Portal → **Seasons** → *Start a new season*; set the deadline, open registration, make it current.

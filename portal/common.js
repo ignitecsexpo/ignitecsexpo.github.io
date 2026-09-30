@@ -16,7 +16,14 @@ var EXPO = (function () {
         DIVISIONS: ['K-3', '4-6', '7-8', '9-12'],
         AWARDS: ['First Place', 'Second Place', 'Third Place', 'Fourth Place', 'Fifth Place',
             'Innovative Project Award', 'Best Teamwork Award', 'Distinguished Ideas Award',
-            "People's Choice Award", 'Project of the Year']
+            "People's Choice Award", 'Project of the Year'],
+        // The judge rubric: three scores from 1 to 10 each, total out of 30.
+        CRITERIA: [
+            ['scoreTechnical', 'Technical challenge', 'How hard was this to build, for their grade? Does it actually work, and can the student explain how?'],
+            ['scoreIdea', 'Idea', 'Is it original? Is there a real problem and a real use? Did it make you say “wow”?'],
+            ['scorePresentation', 'Presentation', 'Was the demo clear and well organized? Did they answer your questions with confidence?']
+        ],
+        SCORE_MAX: 30
     };
 
     var A = window.Appwrite;
@@ -111,6 +118,28 @@ var EXPO = (function () {
             return new Promise(function () {});
         });
     }
+    // Google sign-in uses the OAuth *token* flow: Google sends the browser back to `back` with
+    // ?userId=&secret=, and finishOAuth() turns those into a normal session. (The cookie-based
+    // session flow breaks in browsers that block third-party cookies, since Appwrite is on another domain.)
+    function googleSignIn(back) {
+        var u = new URL(back || location.href);
+        u.searchParams.set('oauth', '1');
+        var fail = new URL(u.href); fail.searchParams.set('oauth', 'failed');
+        return account.deleteSession({ sessionId: 'current' }).catch(function () {}).then(function () {
+            account.createOAuth2Token({ provider: 'google', success: u.href, failure: fail.href });
+        });
+    }
+    // Returns null when this page load is not a Google redirect; otherwise a promise for the session.
+    function finishOAuth() {
+        var qs = new URLSearchParams(location.search);
+        var flag = qs.get('oauth');
+        if (!flag) return null;
+        var userId = qs.get('userId'), secret = qs.get('secret');
+        ['oauth', 'userId', 'secret', 'error'].forEach(function (k) { qs.delete(k); });
+        history.replaceState(null, '', location.pathname + (qs.toString() ? '?' + qs : '') + location.hash);
+        if (flag !== '1' || !userId || !secret) return Promise.reject(new Error('Google sign-in was cancelled or did not work. Please try again.'));
+        return account.createSession({ userId: userId, secret: secret });
+    }
     function signOut() {
         return account.deleteSession({ sessionId: 'current' }).catch(function () {}).then(function () { location.href = './'; });
     }
@@ -180,7 +209,7 @@ var EXPO = (function () {
     return {
         CFG: CFG, account: account, tables: tables, teams: teams, Query: Query, ID: ID, Permission: Permission, Role: Role,
         listAll: listAll, createRow: createRow, updateRow: updateRow, deleteRow: deleteRow, getRow: getRow, clean: clean, pool: pool,
-        callFn: callFn, me: me, requireRole: requireRole, signOut: signOut,
+        callFn: callFn, me: me, requireRole: requireRole, signOut: signOut, googleSignIn: googleSignIn, finishOAuth: finishOAuth,
         esc: esc, $: $, $$: $$, toast: toast, fail: fail, fmtDate: fmtDate, opts: opts, download: download, toCsv: toCsv,
         divLabel: divLabel, siteBase: siteBase, loadSeasons: loadSeasons, rememberSeason: rememberSeason, inSeason: inSeason
     };
