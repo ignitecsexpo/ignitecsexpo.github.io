@@ -86,22 +86,9 @@
             <label for="name">Full name</label>
             <input id="name" autocomplete="name" maxlength="120" required>
         </div>
-        <div class="pw-row">
-            <div class="field">
-                <label for="affiliation">School or company</label>
-                <input id="affiliation" maxlength="160" required>
-            </div>
-            <div class="field">
-                <label for="role">You are a…</label>
-                <select id="role" required>
-                    <option value="">Choose…</option>
-                    <option>Undergraduate student</option>
-                    <option>Graduate student</option>
-                    <option>Faculty or teacher</option>
-                    <option>Industry professional</option>
-                    <option>Other</option>
-                </select>
-            </div>
+        <div class="field">
+            <label for="affiliation">School or company</label>
+            <input id="affiliation" maxlength="160" required>
         </div>
 
         <label class="check"><input type="checkbox" id="agree" required><span id="agree-text">I can take part on interview day, and I will keep students' names and projects confidential.</span></label>
@@ -151,7 +138,7 @@
     }, function () {});
 
     // Google: remember what was typed so far, go to Google, and come back to this same link.
-    var FIELDS = ['name', 'affiliation', 'role'];
+    var FIELDS = ['name', 'affiliation'];
     $('#google').addEventListener('click', function () {
         var draft = { agree: $('#agree').checked };
         FIELDS.forEach(function (id) { draft[id] = $('#' + id).value; });
@@ -197,7 +184,7 @@
             check($('#pw1'), $('#pw1').value.length >= 8 ? '' : 'Use at least 8 characters.');
             check($('#pw2'), $('#pw2').value === $('#pw1').value ? '' : 'The two passwords do not match.');
         }
-        ['name', 'affiliation', 'role'].forEach(function (id) { check($('#' + id), $('#' + id).value.trim() ? '' : 'This field is required.'); });
+        ['name', 'affiliation'].forEach(function (id) { check($('#' + id), $('#' + id).value.trim() ? '' : 'This field is required.'); });
         check($('#agree'), $('#agree').checked ? '' : 'Please confirm to continue.');
         return bad;
     }
@@ -225,7 +212,7 @@
         var v = function (id) { return $('#' + id).value.trim() || null; };
         ensureAccount().then(function () {
             return X.callFn({ action: 'judgeSignup', code: code, season: contest || undefined, data: {
-                name: v('name'), affiliation: v('affiliation'), role: v('role'), agreed: true } });
+                name: v('name'), affiliation: v('affiliation'), agreed: true } });
         }).then(function (out) {
             if (!out.ok) throw new Error(out.message);
             form.hidden = true; $('#j-intro').hidden = true; $('#j-notice').hidden = true;

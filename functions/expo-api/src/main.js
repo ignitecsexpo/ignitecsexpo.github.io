@@ -207,7 +207,7 @@ export default async ({ req, res, log, error }) => {
             tracks: list(input.tracks, TRACKS, 10), divisions: list(input.divisions, ['K-3', '4-6', '7-8', '9-12'], 4),
             conflicts: str(input.conflicts, 600), agreed: input.agreed === true
         };
-        if (!data.name || !data.affiliation || !data.role) return bad('Please fill in your name, affiliation and role.');
+        if (!data.name || !data.affiliation) return bad('Please fill in your name and affiliation.');
         if (!data.agreed) return bad('Please confirm you can take part.');
 
         const existing = await myJudgeRow(season.$id, userId);
