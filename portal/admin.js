@@ -292,14 +292,18 @@
         };
     }
 
-    // One registration (individual or whole team) becomes one project.
+    // One registration (individual or whole team) becomes one project. The project reuses the
+    // registration's row id (as the expo-api function does), so a second build can never duplicate it.
     function buildProjects() {
         var fresh = S.regs.filter(function (r) { return !r.projectId && r.status !== 'withdrawn' && r.status !== 'rejected'; });
         if (!fresh.length) return X.toast('Every registration already has a project.');
         var pg = progressPanel('Building projects'), errors = [];
         X.pool(fresh, function (r) {
-            return X.createRow(T.proj, projectDataFrom(r)).then(function (p) {
-                S.projects.push(p);
+            return X.createRow(T.proj, projectDataFrom(r), null, r.$id).catch(function (e) {
+                if (e.code === 409) return X.getRow(T.proj, r.$id); // already built (by the function, or another admin)
+                throw e;
+            }).then(function (p) {
+                if (!byId(S.projects, p.$id)) S.projects.push(p);
                 return X.updateRow(T.reg, r.$id, { projectId: p.$id }).then(function (row) { S.regs[S.regs.indexOf(r)] = row; });
             });
         }, 3, function (done, total) { pg.tick(done, total, 'Projects'); }).then(function (res) {

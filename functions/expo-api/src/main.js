@@ -86,6 +86,22 @@ export default async ({ req, res, log, error }) => {
     const isEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s || '');
     const isUrl = (s) => /^https?:\/\/\S+$/i.test(s || '');
 
+    // One registration (an individual or a whole team) becomes one project, with the same row id,
+    // so building it twice is harmless. Same mapping as projectDataFrom() in portal/admin.js.
+    async function createProjectFor(r) {
+        const people = [{ name: `${r.firstName || ''} ${r.lastName || ''}`.trim(), grade: r.grade }]
+            .concat((r.memberNames || []).map((n, i) => ({ name: n, grade: (r.memberGrades || [])[i] || '' })).filter((x) => x.name));
+        const data = {
+            season: r.season, entryNumber: r.entryNumber || null, title: r.projectTitle, track: r.track, division: r.division,
+            entryType: r.entryType, teamName: r.entryType === 'team' ? r.teamName : null,
+            members: people.map((x) => `${x.name} (Gr ${x.grade})`).join(', ').slice(0, 800), memberCount: people.length,
+            country: r.country, xField: r.xField || null, summary: r.projectSummary || null, demoUrl: r.demoUrl || null, codeUrl: r.codeUrl || null,
+            aiTools: r.aiTools || null, status: 'submitted'
+        };
+        try { await api(rows('projects'), 'POST', { rowId: r.$id, data }); } catch (e) { if (e.code !== 409) throw e; }
+        await api(rows('registrations') + '/' + r.$id, 'PATCH', { data: { projectId: r.$id } });
+    }
+
     async function register(input) {
         const bad = (message) => ({ status: 400, body: { ok: false, message } });
         if (!input || typeof input !== 'object') return bad('Missing application data.');
@@ -141,6 +157,9 @@ export default async ({ req, res, log, error }) => {
         data.entryNumber = counter.nextEntryNumber - 1;
         const row = await api(rows('registrations'), 'POST', { rowId: 'unique()', data });
         log(`registered #${data.entryNumber} (${season.$id}) ${row.$id}`);
+        // Judges work from the projects table, so every entry gets its project straight away.
+        // (Admin → Projects → "Build projects" catches any that fail here.)
+        try { await createProjectFor(row); } catch (e) { error('project for #' + data.entryNumber + ' failed: ' + (e.message || e)); }
 
         let emailed = false;
         if (smtpReady()) {
