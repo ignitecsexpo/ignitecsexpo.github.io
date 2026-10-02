@@ -633,6 +633,12 @@
         nonwinners: ['Participants without an award', function (r, p) { return r.status !== 'rejected' && r.status !== 'withdrawn' && !(p && p.award); }],
         withcert: ['Anyone who has a certificate', function (r) { return !!bestCert(r); }]
     };
+    // Not families: organizers, and a single test inbox. Fill-ins use a sample entry (the first matching family).
+    var TEST_EMAIL = 'yu.sun.cs@gmail.com';
+    var PEOPLE = {
+        admins: ['All admins', function () { return S.admins.filter(function (m) { return m.confirm && m.userEmail; }).map(function (m) { return m.userEmail; }); }],
+        test: ['Test: ' + TEST_EMAIL + ' only', function () { return [TEST_EMAIL]; }]
+    };
     // Best certificate for each student in an entry (award beats finalist beats participation).
     function certsFor(r) {
         var order = { award: 0, finalist: 1, participation: 2 }, best = {};
@@ -662,7 +668,8 @@
             : '<div class="note"><b>Email sending is not set up yet.</b> You can still write a message and use “Copy addresses” or “Export mail-merge CSV” to send it from your own mail program. To send from here, see <a href="#settings" style="text-decoration:underline">Settings</a>.</div>';
         main.innerHTML = head('Notifications', 'Email families. One message per entry (a team gets one), with their details filled in. It goes to the contact address, with the student copied if they gave an email.') + emailNote +
             '<div class="grid2"><div class="panel"><h2>Compose</h2>' +
-            '<div class="frow"><div class="f"><label>To</label><select id="n-aud">' + Object.keys(AUDIENCES).map(function (k) { return '<option value="' + k + '"' + (k === 'active' ? ' selected' : '') + '>' + esc(AUDIENCES[k][0]) + '</option>'; }).join('') + '</select></div>' +
+            '<div class="frow"><div class="f"><label>To</label><select id="n-aud"><optgroup label="Families">' + Object.keys(AUDIENCES).map(function (k) { return '<option value="' + k + '"' + (k === 'active' ? ' selected' : '') + '>' + esc(AUDIENCES[k][0]) + '</option>'; }).join('') + '</optgroup>' +
+                '<optgroup label="Organizers">' + Object.keys(PEOPLE).map(function (k) { return '<option value="' + k + '">' + esc(PEOPLE[k][0]) + '</option>'; }).join('') + '</optgroup></select></div>' +
             '<div class="f"><label>Start from</label><select id="n-tpl">' + Object.keys(TEMPLATES).map(function (k) { return '<option value="' + k + '">' + esc(TEMPLATES[k].name) + '</option>'; }).join('') + '</select></div>' +
             '<div class="f"><label>Division</label><select id="n-div">' + X.opts(CFG.DIVISIONS, '', 'All divisions') + '</select></div><div class="f"><label>Track</label><select id="n-track">' + X.opts(CFG.TRACKS, '', 'All tracks') + '</select></div></div>' +
             '<div class="f"><label>Subject</label><input id="n-subject"></div><div class="f"><label>Message</label><textarea id="n-body" style="min-height:260px"></textarea>' +
@@ -673,8 +680,8 @@
                 S.notifs.map(function (n) { return '<tr><td>' + esc(X.fmtDate(n.$createdAt)) + '</td><td><b>' + esc(n.subject) + '</b>' + (n.errors ? '<small>' + esc(n.errors.slice(0, 160)) + '</small>' : '') + '</td><td>' + esc(n.audience) + '</td><td class="num">' + (n.sentCount || 0) + '</td><td class="num">' + (n.failedCount || 0) + '</td><td>' + esc(n.sentBy) + '</td></tr>'; }).join('') +
                 '</tbody></table>' : '<div class="empty">Nothing sent yet.</div>') + '</div>';
 
-        function recipients() {
-            var aud = AUDIENCES[$('#n-aud').value][1], dv = $('#n-div').value, tr = $('#n-track').value;
+        function families(key) {
+            var aud = AUDIENCES[key][1], dv = $('#n-div').value, tr = $('#n-track').value;
             return S.regs.filter(function (r) {
                 var p = r.projectId ? byId(S.projects, r.projectId) : null;
                 if (dv && ((p && p.division) || r.division) !== dv) return false;
@@ -682,15 +689,26 @@
                 return r.parentEmail && aud(r, p);
             });
         }
-        function audienceLabel() { return AUDIENCES[$('#n-aud').value][0] + ($('#n-div').value ? ' · ' + X.divLabel($('#n-div').value) : '') + ($('#n-track').value ? ' · ' + $('#n-track').value : ''); }
+        // Everyone this message goes to: { to, cc, fields } — a family with its own fill-ins, or an organizer.
+        function recipients() {
+            var key = $('#n-aud').value;
+            if (PEOPLE[key]) {
+                var sample = families('active')[0], f = sample ? mergeFields(sample) : { eventName: S.season.name, siteUrl: (S.settings.siteUrl || 'https://igniteaiexpo.org').replace(/\/$/, ''), season: sid(), interviewDate: S.settings.interviewDate || '' };
+                return PEOPLE[key][1]().map(function (email) { return { to: email, fields: f, sample: sample }; });
+            }
+            return families(key).map(function (r) { return { to: r.parentEmail, cc: r.studentEmail || undefined, fields: mergeFields(r), reg: r }; });
+        }
+        function audienceLabel() { var k = $('#n-aud').value; return PEOPLE[k] ? PEOPLE[k][0] : AUDIENCES[k][0] + ($('#n-div').value ? ' · ' + X.divLabel($('#n-div').value) : '') + ($('#n-track').value ? ' · ' + $('#n-track').value : ''); }
         function preview() {
-            var list = recipients();
+            var list = recipients(), x = list[0];
             $('#n-count').textContent = list.length + ' recipient' + (list.length === 1 ? '' : 's');
             if (!list.length) { $('#n-preview').innerHTML = '<div class="empty">Nobody matches.</div>'; return; }
-            var f = mergeFields(list[0]);
-            $('#n-preview').innerHTML = '<dl class="kv"><dt>To</dt><dd>' + esc(list[0].parentEmail) + (list[0].studentEmail ? ' <span style="color:var(--muted)">cc ' + esc(list[0].studentEmail) + '</span>' : '') + '</dd><dt>Subject</dt><dd><b>' + esc(fill($('#n-subject').value, f)) + '</b></dd></dl><div class="prose" style="margin:0">' + esc(fill($('#n-body').value, f)) + '</div>';
+            var to = PEOPLE[$('#n-aud').value] ? list.map(function (y) { return y.to; }).join(', ') : x.to;
+            $('#n-preview').innerHTML = (x.sample ? '<div class="note" style="font-size:13px">Fill-ins use entry #' + esc(x.sample.entryNumber) + ' as a sample, so you see what a family would get.</div>' : '') +
+                '<dl class="kv"><dt>To</dt><dd>' + esc(to) + (x.cc ? ' <span style="color:var(--muted)">cc ' + esc(x.cc) + '</span>' : '') + '</dd><dt>Subject</dt><dd><b>' + esc(fill($('#n-subject').value, x.fields)) + '</b></dd></dl><div class="prose" style="margin:0">' + esc(fill($('#n-body').value, x.fields)) + '</div>';
         }
         ['n-aud', 'n-div', 'n-track'].forEach(function (id) { $('#' + id).addEventListener('change', preview); });
+        $('#n-aud').addEventListener('change', function () { var org = !!PEOPLE[this.value]; $('#n-div').disabled = $('#n-track').disabled = org; });
         ['n-subject', 'n-body'].forEach(function (id) { $('#' + id).addEventListener('input', preview); });
         $('#n-tpl').addEventListener('change', function () { var t = TEMPLATES[this.value]; $('#n-subject').value = t.subject; $('#n-body').value = t.body; preview(); });
         preview();
@@ -698,14 +716,14 @@
         function compose(list) {
             var subject = $('#n-subject').value.trim(), body = $('#n-body').value.trim();
             if (!subject || !body) { X.toast('Write a subject and a message first.', true); return null; }
-            return list.map(function (r) { var f = mergeFields(r); return { to: r.parentEmail, cc: r.studentEmail || undefined, subject: fill(subject, f), text: fill(body, f) }; });
+            return list.map(function (x) { return { to: x.to, cc: x.cc, subject: fill(subject, x.fields), text: fill(body, x.fields) }; });
         }
         $('#n-copy').addEventListener('click', function () {
-            var list = recipients().map(function (r) { return r.parentEmail; }).filter(function (e, i, a) { return a.indexOf(e) === i; });
+            var list = recipients().map(function (x) { return x.to; }).filter(function (e, i, a) { return a.indexOf(e) === i; });
             navigator.clipboard.writeText(list.join(', ')).then(function () { X.toast(list.length + ' address(es) copied. Paste them into BCC.'); }, X.fail);
         });
         $('#n-csv').addEventListener('click', function () {
-            X.download('igniteai-mail-merge.csv', X.toCsv(recipients().map(function (r) { var f = mergeFields(r); f.email = r.parentEmail; f.studentEmail = r.studentEmail; return f; }),
+            X.download('igniteai-mail-merge.csv', X.toCsv(recipients().map(function (x) { var f = Object.assign({}, x.fields); f.email = x.to; f.studentEmail = x.cc || ''; return f; }),
                 ['email', 'studentEmail', 'studentNames', 'studentFullNames', 'teamName', 'parentName', 'projectTitle', 'track', 'division', 'award', 'interviewDate', 'interviewTime', 'zoomLink', 'certificateUrl', 'entryNumber']), 'text/csv');
         });
         $('#n-test').addEventListener('click', function () {
