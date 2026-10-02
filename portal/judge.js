@@ -137,7 +137,7 @@
             $('#tbl').innerHTML = rows.length ? '<table class="tbl"><thead><tr><th>Entry</th><th>Project</th><th>Division</th><th>Track</th><th>Reviews</th><th>My review</th><th class="num">My score</th></tr></thead><tbody>' + rows.map(function (p) {
                 var v = reviewOf(p), n = S.counts[p.$id] || 0;
                 return '<tr class="click" data-id="' + p.$id + '"><td class="num"><b>' + esc(p.entryNumber || '—') + '</b></td><td><b>' + esc(p.title) + '</b>' + (mine(p) ? ' <span class="tag blue">assigned to you</span>' : '') + '<small>' + esc(p.members) + '</small></td>' +
-                    '<td>' + esc(X.divLabel(p.division)) + '</td><td>' + esc(p.track) + '</td>' +
+                    '<td style="white-space:nowrap">' + esc(X.divLabel(p.division)) + '</td><td>' + esc(p.track) + '</td>' +
                     '<td>' + (n ? '<span class="tag green">' + n + ' judge' + (n === 1 ? '' : 's') + '</span>' : '<span class="tag red">none yet</span>') + '</td>' +
                     '<td>' + (v && v.submitted ? '<span class="tag green">✓ reviewed</span>' : v ? '<span class="tag gold">draft</span>' : '<span class="tag">not yet</span>') + '</td>' +
                     '<td class="num">' + (v && v.submitted ? '<b>' + scoreText(v) + '</b>' : '—') + '</td></tr>';
