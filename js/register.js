@@ -30,6 +30,10 @@
     function showNotice(html) { notice.innerHTML = html; notice.hidden = false; }
     function closeForm(html) { showNotice(html); form.hidden = true; }
 
+    // A private late-entry link (?late=<code>) keeps the form open after the deadline; the server checks the code.
+    var lateCode = new URLSearchParams(location.search).get('late') || '';
+    var lateCheck = lateCode ? callServer({ action: 'checkLate', code: lateCode }).then(function (r) { return !!r.valid; }, function () { return false; }) : Promise.resolve(false);
+
     // Open or closed? Ask for the current season (public table: name, deadline, open flag).
     var seasonQuery = encodeURIComponent(JSON.stringify({ method: 'equal', attribute: 'isCurrent', values: [true] }));
     fetch(APPWRITE.endpoint + '/tablesdb/expo/tables/seasons/rows?queries[]=' + seasonQuery, { headers: { 'X-Appwrite-Project': APPWRITE.projectId } })
@@ -37,9 +41,10 @@
             var season = r.rows && r.rows[0];
             if (!season) return;
             var due = season.applyDeadline ? new Date(season.applyDeadline) : null;
-            if (season.registrationOpen === false || (due && new Date() > due)) {
+            if (season.registrationOpen === false || (due && new Date() > due)) return lateCheck.then(function (ok) {
+                if (ok) return showNotice('<b>Late entry link.</b> Applications for ' + season.name + ' are closed to the public, but you can still submit yours here.');
                 closeForm('Applications for ' + season.name + ' are closed. Questions? Email <a href="mailto:hello@mail.igniteaiexpo.org" style="color:var(--accent)">hello@mail.igniteaiexpo.org</a>.');
-            }
+            });
         }).catch(function () { /* the server still enforces the deadline on submit */ });
 
     // ----- Division (a team competes in the division of its highest grade) -----
@@ -202,7 +207,7 @@
         submitBtn.disabled = true;
         submitBtn.firstChild.textContent = 'Submitting… ';
 
-        callServer({ action: 'register', data: data }).then(function (out) {
+        callServer({ action: 'register', data: data, late: lateCode || undefined }).then(function (out) {
             if (out.closed) { closeForm(out.message); window.scrollTo(0, 0); return; }
             if (!out.ok) throw new Error(out.message);
             form.hidden = true;

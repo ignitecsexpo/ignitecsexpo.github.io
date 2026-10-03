@@ -1,5 +1,6 @@
 // IgniteAI Expo — server function.
-//   POST {action:"register", data:{...}}             anyone   submit an application -> entry number
+//   POST {action:"register", data:{...}, late?}      anyone   submit an application -> entry number
+//   POST {action:"checkLate", code}                  anyone   is this private late-entry code valid?
 //   POST {action:"getCertificate", id}               anyone   one certificate, by its private id
 //   POST {action:"judgeInfo", season?, code}         anyone   what the judge sign-up page shows
 //   POST {action:"judgeSignup", season?, data, code} signed-in  save a judge profile; right code -> approved at once
@@ -104,15 +105,21 @@ export default async ({ req, res, log, error }) => {
         await api(rows('registrations') + '/' + r.$id, 'PATCH', { data: { projectId: r.$id } });
     }
 
-    async function register(input) {
+    // A private link (register.html?late=<code>) lets organizers take an application after the
+    // deadline, or while registration is switched off. The code lives in the admin-only settings row.
+    const lateOk = (cfg, code) => !!cfg.lateRegistrationCode && String(code || '').trim() === cfg.lateRegistrationCode;
+
+    async function register(input, late) {
         const bad = (message) => ({ status: 400, body: { ok: false, message } });
         if (!input || typeof input !== 'object') return bad('Missing application data.');
         if (input.website) return { status: 200, body: { ok: true, entryNumber: 0 } }; // honeypot: pretend it worked
 
         const season = await currentSeason();
         if (!season) return { status: 503, body: { ok: false, message: 'Registration is not open yet.' } };
-        if (season.registrationOpen === false) return { status: 403, body: { ok: false, closed: true, message: 'Registration is closed.' } };
-        if (season.applyDeadline && Date.now() > Date.parse(season.applyDeadline)) return { status: 403, body: { ok: false, closed: true, message: 'The application deadline has passed.' } };
+        const isLate = !!late && lateOk(await settingsOf(season.$id), late);
+        if (isLate) log('late entry accepted through the private link');
+        else if (season.registrationOpen === false) return { status: 403, body: { ok: false, closed: true, message: 'Registration is closed.' } };
+        else if (season.applyDeadline && Date.now() > Date.parse(season.applyDeadline)) return { status: 403, body: { ok: false, closed: true, message: 'The application deadline has passed.' } };
 
         const team = input.entryType === 'team';
         const names = team && Array.isArray(input.memberNames) ? input.memberNames : [];
@@ -311,8 +318,12 @@ export default async ({ req, res, log, error }) => {
         const body = req.bodyJson || {};
 
         if (body.action === 'register') {
-            const out = await register(body.data);
+            const out = await register(body.data, body.late);
             return res.json(out.body, out.status);
+        }
+        if (body.action === 'checkLate') {
+            const season = await currentSeason();
+            return res.json({ ok: true, valid: !!season && lateOk(await settingsOf(season.$id), body.code) });
         }
 
         // ---- Public: one certificate by id ----

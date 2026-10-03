@@ -134,6 +134,7 @@ string(T, "judgeDiscordUrl", 300)    # shown to judges only after they are appro
 string(T, "judgeCommitment", 400)    # e.g. "1–2 hours, interviewing 6–8 projects on Zoom"
 string(T, "judgeZoomUrl", 500)       # judges' briefing room, shown in the judge portal
 string(T, "judgeNotes", 2000)        # organizers' note to judges, shown in the judge portal
+string(T, "lateRegistrationCode", 40) # private link register.html?late=<code> accepts entries after the deadline
 
 print("== registrations (written only by the expo-api function, so numbering + deadline are enforced)")
 T = "registrations"
