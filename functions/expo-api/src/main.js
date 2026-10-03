@@ -7,6 +7,7 @@
 //   POST {action:"judgeHome", season?}               judges   my contests, event info (Zoom, Discord), review counts
 //   POST {action:"projectReviews", projectId}        judges   every judge's review of a project, once I have reviewed it
 //   POST {action:"setJudgeStatus", id, status}       admins   approve / decline a sign-up
+//   POST {action:"resetJudgePassword", userId}       admins   give a judge a new random password (returned once)
 //   POST {action:"emailStatus"}                      admins   is SMTP configured?
 //   POST {action:"listPeople"}                       admins   judges + admins with names and emails
 //   POST {action:"sendEmails", messages:[...]}       admins   send up to 15 emails per call
@@ -17,6 +18,7 @@
 // SMTP settings come from the function's environment variables:
 //   SMTP_HOST, SMTP_PORT (587), SMTP_USER, SMTP_PASS, SMTP_FROM
 import nodemailer from 'nodemailer';
+import { randomInt } from 'node:crypto';
 
 const DB = 'expo';
 const MAX_PER_CALL = 15;
@@ -380,6 +382,22 @@ export default async ({ req, res, log, error }) => {
                 for (const x of (m.memberships || [])) if (x.userId === row.userId && !(x.roles || []).includes('owner')) await api('/teams/judges/memberships/' + x.$id, 'DELETE');
             }
             return res.json({ ok: true, row: updated });
+        }
+
+        // Admins can't set another person's password from the browser, so it happens here. Judges only:
+        // an admin's account (which can see every family's contact details) is never reset this way.
+        if (body.action === 'resetJudgePassword') {
+            const target = String(body.userId || '');
+            if (!/^[A-Za-z0-9_.-]{1,36}$/.test(target)) return res.json({ ok: false, message: 'Bad user id.' }, 400);
+            if (!(await inTeam('judges', target))) return res.json({ ok: false, message: 'That account is not a judge.' }, 400);
+            if (await inTeam('admins', target)) return res.json({ ok: false, message: 'Organizer passwords can only be reset by their owner, with “Forgot password” on the sign-in page.' }, 403);
+            const abc = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no look-alikes (0/O, 1/l/I)
+            const part = () => Array.from({ length: 4 }, () => abc[randomInt(abc.length)]).join('');
+            const password = `${part()}-${part()}-${part()}`;
+            await api('/users/' + target + '/password', 'PATCH', { password });
+            const u = await api('/users/' + target);
+            log(`password reset for judge ${target} by admin ${userId}`);
+            return res.json({ ok: true, name: u.name, email: u.email, password });
         }
 
         if (body.action === 'emailStatus') {

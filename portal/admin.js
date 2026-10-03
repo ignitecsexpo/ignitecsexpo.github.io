@@ -425,7 +425,7 @@
                 var done = S.reviews.filter(function (v) { return v.judgeId === m.userId && v.submitted; }).length;
                 return '<tr><td><b>' + esc(m.userName || '—') + '</b></td><td>' + esc(m.userEmail) + '</td><td>' + (m.confirm ? '<span class="tag green">active</span>' : '<span class="tag">invited</span>') + '</td>' +
                     (team === 'judges' ? '<td class="num">' + assigned + '</td><td class="num">' + done + '</td>' : '') +
-                    '<td class="num">' + (m.userId === S.me.user.$id ? '<small>you</small>' : '<button class="pbtn sm danger" data-rm="' + m.$id + '" data-team="' + team + '">Remove</button>') + '</td></tr>';
+                    '<td class="num">' + (m.userId === S.me.user.$id ? '<small>you</small>' : (team === 'judges' && m.confirm ? '<button class="pbtn sm" data-reset="' + m.userId + '">Reset password</button> ' : '') + '<button class="pbtn sm danger" data-rm="' + m.$id + '" data-team="' + team + '">Remove</button>') + '</td></tr>';
             }).join('') + '</tbody></table></div>' : '<div class="tbl-wrap"><div class="empty">Nobody yet.</div></div>';
         }
 
@@ -497,6 +497,18 @@
             invite('admins', ['owner'], name, email).then(function () { return invite('judges', ['owner'], name, email); })
                 .then(function () { X.toast('Invitations sent to ' + email + '.'); return loadPeople(); }).then(route, X.fail);
         });
+        $$('[data-reset]').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var m = S.judges.filter(function (x) { return x.userId === b.getAttribute('data-reset'); })[0];
+                if (!confirm('Give ' + (m.userName || m.userEmail) + ' a new password? Their old password stops working.')) return;
+                b.disabled = true;
+                X.callFn({ action: 'resetJudgePassword', userId: m.userId }).then(function (r) {
+                    b.disabled = false;
+                    if (!r.ok) throw new Error(r.message);
+                    loginInfo(r);
+                }).catch(function (e) { b.disabled = false; X.fail(e); });
+            });
+        });
         $$('[data-rm]').forEach(function (b) {
             b.addEventListener('click', function () {
                 if (!confirm('Remove this person\'s access?')) return;
@@ -504,6 +516,20 @@
             });
         });
     };
+
+    // A judge's new sign-in details, ready to paste into an email or chat. The password is shown only here.
+    function loginInfo(r) {
+        var site = (S.settings.siteUrl || X.siteBase()).replace(/\/$/, '');
+        var text = (S.season.name || 'IgniteAI Expo') + ' — judge portal\nSign in: ' + site + '/portal/\nEmail: ' + r.email + '\nPassword: ' + r.password +
+            '\n\nYou can choose your own password any time with “Forgot password” on the sign-in page.';
+        var d = openDrawer('<h2>New password for ' + esc(r.name || r.email) + '</h2><p class="sub">Copy this and send it to them. The password is shown only once; if it gets lost, just reset it again.</p>' +
+            '<div class="f"><textarea id="li-text" readonly style="min-height:190px;font-family:ui-monospace,Menlo,monospace;font-size:14px">' + esc(text) + '</textarea></div>' +
+            '<div class="p-actions"><button class="pbtn primary" id="li-copy">Copy login info</button><button class="pbtn" id="li-close">Done</button></div>');
+        $('#li-copy', d).addEventListener('click', function () {
+            navigator.clipboard.writeText(text).then(function () { X.toast('Login info copied.'); }, function () { $('#li-text', d).select(); document.execCommand('copy'); X.toast('Login info copied.'); });
+        });
+        $('#li-close', d).addEventListener('click', closeDrawer);
+    }
 
     // =====================================================================
     // Scores & awards
