@@ -83,7 +83,7 @@
             label.textContent = 'Final interviews begin in';
             dateEl.textContent = 'Sunday, October 4, 2026 · 9:30 AM PT';
             pill.classList.add('closed');
-            pillText.textContent = 'Applications closed · Final interviews Oct 4';
+            pillText.textContent = 'Applications closed · Final interviews Sun Oct 4, 9:30 AM PT';
             $('#deadline-local').setAttribute('data-iso', INTERVIEW.toISOString());
             setSteps(1);
         } else {
