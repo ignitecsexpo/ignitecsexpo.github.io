@@ -317,8 +317,8 @@
     TABS.projects = function () {
         var unlinked = S.regs.filter(function (r) { return !r.projectId && r.status !== 'withdrawn' && r.status !== 'rejected'; }).length;
         main.innerHTML = head('Projects', 'What judges see: one row per entry, with no contact details.',
-            '<button class="pbtn primary" id="p-build">Build from registrations' + (unlinked ? ' (' + unlinked + ' new)' : '') + '</button><button class="pbtn" id="p-assign">Assign judges…</button><button class="pbtn" id="p-csv">Export CSV</button>') +
-            filterBar('proj', PROJ_STATUS) + '<div class="tbl-wrap" id="proj-table"></div>';
+            '<button class="pbtn primary" id="p-build">Build from registrations' + (unlinked ? ' (' + unlinked + ' new)' : '') + '</button><button class="pbtn" id="p-refresh">Refresh reviews</button><button class="pbtn" id="p-assign">Assign judges…</button><button class="pbtn" id="p-csv">Export CSV</button>') +
+            reviewStats() + filterBar('proj', PROJ_STATUS) + '<div class="tbl-wrap" id="proj-table"></div>';
         var rowsNow = [];
         var draw = function () {
             rowsNow = S.projects.filter(function (p) { return matches(p, filters.proj, ['entryNumber', 'title', 'members', 'teamName', 'country', 'xField']); })
@@ -335,6 +335,7 @@
         };
         bindFilters('proj', draw); draw();
         $('#p-build').addEventListener('click', buildProjects);
+        $('#p-refresh').addEventListener('click', function () { X.listAll(T.rev, X.inSeason(sid())).then(function (r) { S.reviews = r; X.toast('Reviews refreshed.'); route(); }, X.fail); });
         $('#p-assign').addEventListener('click', function () { assignDrawer(rowsNow); });
         $('#p-csv').addEventListener('click', function () {
             X.download('igniteai-projects-' + sid() + '.csv', X.toCsv(rowsNow.map(function (p) {
@@ -343,6 +344,19 @@
             }), ['entryNumber', 'title', 'division', 'track', 'entryType', 'teamName', 'members', 'country', 'xField', 'status', 'assignedJudges', 'reviews', 'average', 'award', 'interviewTime', 'demoUrl', 'codeUrl']), 'text/csv');
         });
     };
+
+    // Judging progress across the season's live projects (submitted reviews only).
+    function reviewStats() {
+        var live = S.projects.filter(function (p) { return p.status !== 'withdrawn' && p.status !== 'rejected'; });
+        var done = live.filter(function (p) { return reviewsOf(p).length; }).length, total = live.length, pct = total ? Math.round(done / total * 100) : 0;
+        var subs = S.reviews.filter(function (v) { return v.submitted; }), judges = {};
+        subs.forEach(function (v) { judges[v.judgeId] = 1; });
+        return '<div class="cards">' +
+            '<div class="card"><b>' + done + '<small> / ' + total + '</small></b><span>projects reviewed (' + pct + '%)</span><div class="progress" style="margin:10px 0 0"><i style="width:' + pct + '%"></i></div></div>' +
+            '<div class="card"><b>' + (total - done) + '</b><span>still waiting for a review</span></div>' +
+            '<div class="card"><b>' + subs.length + '</b><span>reviews written</span></div>' +
+            '<div class="card"><b>' + Object.keys(judges).length + '</b><span>judges have reviewed</span></div></div>';
+    }
 
     function reviewCards(p, includePrivate) {
         var all = S.reviews.filter(function (v) { return v.projectId === p.$id; });
@@ -647,6 +661,7 @@
         accepted: { name: 'Application accepted', subject: 'Entry #{{entryNumber}}: accepted to {{eventName}}', body: 'Hello,\n\nGood news — “{{projectTitle}}” by {{studentNames}} has been accepted to {{eventName}} in the {{track}} track, Grade {{division}} division.\n\nFinal interviews take place online on {{interviewDate}}. We will send the Zoom link and schedule shortly.\n\nThe IgniteAI Expo team' },
         finalist: { name: 'Selected for the final (Zoom link + ID)', subject: 'Entry #{{entryNumber}}: you are in the {{eventName}} final — Sunday, October 4, 9:30 AM PT', body: 'Hello,\n\nCongratulations! “{{projectTitle}}” by {{studentNames}} has been selected for the final round of {{eventName}}.\n\nThe final interviews take place online on Zoom:\n\nWhen: {{interviewDate}}. The Zoom room opens at 9:30 AM PT.\nZoom link: https://zoom.us/j/82648176188\nZoom ID: 826 4817 6188\nYour entry number: {{entryNumber}}\n\nPlease note: you may be held in the Zoom waiting room, or let in a little later, while the judges finish with other students, so we can\u2019t guarantee you\u2019ll start right at 9:30 AM. If you aren\u2019t let in yet, please be patient \u2014 or come back and join any time between 9:30 and 11:30 AM PT.\n\nWhen you join, please set your Zoom name to your entry number and first name (for example “#{{entryNumber}} {{firstName}}”) so we can find you quickly. Every team member is welcome to join.\n\nHow to prepare:\n- Have a live, working demo ready, and keep a short backup video just in case.\n- Be ready to explain how you built it, step by step, including any AI tools you used.\n- Test your camera, microphone and screen sharing beforehand.\n\nWe can\u2019t wait to see what you built. Good luck!\n\nThe IgniteAI Expo team' },
         reminder: { name: 'Reminder: interview today (Zoom + waiting room)', subject: 'Today, 9:30 – 11:30 AM PT: your {{eventName}} interview (Entry #{{entryNumber}})', body: 'Hello,\n\nA quick reminder: the {{eventName}} final interviews are today, Sunday, October 4, from 9:30 to 11:30 AM PT, on Zoom.\n\nZoom link: https://zoom.us/j/82648176188\nZoom ID: 826 4817 6188\nYour entry number: {{entryNumber}}\nProject: {{projectTitle}}\n\nPlease note: you may be held in the Zoom waiting room, or let in a little later, while the judges finish with other students, so we can\u2019t guarantee you\u2019ll start right at 9:30 AM. If you aren\u2019t let in yet, please be patient \u2014 or come back and join any time between 9:30 and 11:30 AM PT.\n\nWhen you join, please set your Zoom name to your entry number and first name (for example \u201c#{{entryNumber}} {{firstName}}\u201d) so we can find you quickly.\n\nHave your live demo ready, with a short backup video just in case, and be ready to explain how you built it.\n\nGood luck, {{studentNames}}! We can\u2019t wait to see your project.\n\nThe IgniteAI Expo team' },
+        thanks: { name: 'Thank you for interviewing (keep going with AI)', subject: 'Thank you for presenting at {{eventName}}!', body: 'Hello,\n\nThank you, {{studentNames}}, for presenting \u201c{{projectTitle}}\u201d at the {{eventName}} final interviews today. Building a project and then explaining it to a panel of judges takes real courage and hard work \u2014 you should be proud of what you did.\n\nOur judges were impressed by the creativity, effort and curiosity they saw today. Whatever happens next, please keep going with AI: keep building, keep asking questions, and keep finding new ways to combine AI with the things you love. Every project you make teaches you something new, and the skills you are building now will take you a long way.\n\nWinners will be announced later this week, on our website and by email:\n{{siteUrl}}\n\nThank you again for being part of {{eventName}}. We hope to see your next project!\n\nThe IgniteAI Expo team' },
         interview: { name: 'Interview details', subject: 'Entry #{{entryNumber}}: your final interview — {{interviewDate}}', body: 'Hello,\n\n{{studentNames}} will present “{{projectTitle}}” to our judges.\n\nWhen: {{interviewDate}}\nYour time slot: {{interviewTime}}\nZoom link (Grade {{division}}): {{zoomLink}}\n\nPlease join a few minutes early. Have a live, working demo ready, and keep a backup video just in case. Judges will ask how the project was built, so be ready to explain it.\n\nGood luck!\nThe IgniteAI Expo team' },
         results: { name: 'Results announced', subject: '{{eventName}} results are out', body: 'Hello,\n\nThe {{eventName}} results have been announced:\n{{siteUrl}}/results.html?season={{season}}\n\nThank you to {{studentNames}} for presenting “{{projectTitle}}”. Every project this year took real work and imagination, and the judges were impressed.\n\nCertificates will follow in a separate email.\n\nThe IgniteAI Expo team' },
         winner: { name: 'Congratulations to a winner', subject: 'Congratulations — {{award}} at {{eventName}}', body: 'Hello,\n\nCongratulations! “{{projectTitle}}” earned the {{award}} in the {{track}} track, Grade {{division}} division, at {{eventName}}.\n\nFull results: {{siteUrl}}/results.html?season={{season}}\n\nCertificates:\n{{certificateUrl}}\n\nWe hope to see another project next year.\n\nThe IgniteAI Expo team' },
@@ -656,6 +671,7 @@
         all: ['Everyone who registered', function () { return true; }],
         active: ['Everyone except rejected / withdrawn', function (r) { return r.status !== 'rejected' && r.status !== 'withdrawn'; }],
         accepted: ['Accepted registrations', function (r) { return r.status === 'accepted'; }],
+        interviewed: ['Interviewed (a judge has reviewed the project)', function (r, p) { return !!p && reviewsOf(p).length > 0; }],
         finalists: ['Finalists', function (r, p) { return p && p.status === 'finalist'; }],
         winners: ['Award winners', function (r, p) { return p && p.award; }],
         nonwinners: ['Participants without an award', function (r, p) { return r.status !== 'rejected' && r.status !== 'withdrawn' && !(p && p.award); }],

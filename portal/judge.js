@@ -110,11 +110,14 @@
         var anyAssigned = S.projects.some(mine);
         if (f.scope === 'assigned' && !anyAssigned) f.scope = 'all';
         var nDone = S.projects.filter(done).length;
+        var nAny = S.projects.filter(function (p) { return S.counts[p.$id]; }).length;
+        var nReviews = S.projects.reduce(function (t, p) { return t + (S.counts[p.$id] || 0); }, 0);
         var scopes = [['all', 'All', S.projects.length]].concat(anyAssigned ? [['assigned', 'Assigned to me', S.projects.filter(mine).length]] : [])
-            .concat([['todo', 'Not reviewed by me', S.projects.length - nDone], ['done', 'Reviewed by me', nDone]]);
+            .concat([['none', 'No reviews yet', S.projects.length - nAny], ['todo', 'Not reviewed by me', S.projects.length - nDone], ['done', 'Reviewed by me', nDone]]);
 
         main.innerHTML = eventStrip() +
             '<div class="p-head"><div><h1>Projects</h1><p>' + S.projects.length + ' projects in ' + esc(info().name || 'this contest') + '. You have reviewed <b>' + nDone + '</b>. Click a project to read it and leave your scores and comments.</p></div></div>' +
+            statCards(nAny, nReviews, nDone) +
             '<div class="j-search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>' +
             '<input type="search" id="f-q" placeholder="Search by project name, student or entry # (press / to jump here)" value="' + esc(f.q) + '" autocomplete="off"></div>' +
             '<div class="toolbar"><div class="seg" id="f-scope">' + scopes.map(function (s) { return '<button data-scope="' + s[0] + '"' + (f.scope === s[0] ? ' class="on"' : '') + '>' + s[1] + '<b>' + s[2] + '</b></button>'; }).join('') + '</div>' +
@@ -127,6 +130,7 @@
                 var p = x.p;
                 if (!x.hit) return false;
                 if (f.scope === 'assigned' && !mine(p)) return false;
+                if (f.scope === 'none' && S.counts[p.$id]) return false;
                 if (f.scope === 'todo' && done(p)) return false;
                 if (f.scope === 'done' && !done(p)) return false;
                 if (f.division && p.division !== f.division) return false;
@@ -151,6 +155,26 @@
         $('#f-q').addEventListener('input', function () { f.q = this.value; draw(); });
         $('#f-q').addEventListener('keydown', function (e) { if (e.key === 'Enter' && rows.length) open(rows[0]); });
     }
+
+    // Contest-wide progress: how many projects have at least one review, and how many reviews in all.
+    function statCards(nAny, nReviews, nDone) {
+        var total = S.projects.length, pct = total ? Math.round(nAny / total * 100) : 0;
+        return '<div class="cards">' +
+            '<div class="card"><b>' + nAny + '<small> / ' + total + '</small></b><span>projects reviewed (' + pct + '%)</span><div class="progress" style="margin:10px 0 0"><i style="width:' + pct + '%"></i></div></div>' +
+            '<div class="card"><b>' + (total - nAny) + '</b><span>still waiting for a review</span></div>' +
+            '<div class="card"><b>' + nReviews + '</b><span>reviews written by all judges</span></div>' +
+            '<div class="card"><b>' + nDone + '</b><span>reviewed by you</span></div></div>';
+    }
+    // Other judges are reviewing too: refresh the counts every minute (without disturbing someone mid-search or mid-review).
+    setInterval(function () {
+        if (!S.season || document.hidden) return;
+        X.callFn({ action: 'judgeHome', season: S.season }).then(function (h) {
+            if (!h.ok || h.season !== S.season) return;
+            S.counts = h.counts || {};
+            var tab = (location.hash || '#projects').slice(1), q = $('#f-q');
+            if (tab === 'projects' && !$('.drawer') && !(q && document.activeElement === q)) list();
+        }, function () {});
+    }, 60000);
 
     // ---------------------------------------------------------------- my reviews
     function myReviews() {
