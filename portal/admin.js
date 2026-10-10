@@ -5,7 +5,7 @@
     var X = EXPO, CFG = X.CFG, T = CFG.T, $ = X.$, $$ = X.$$, esc = X.esc, Query = X.Query;
     var S = { me: null, seasons: [], season: null, signups: [], regs: [], projects: [], reviews: [], certs: [], notifs: [], judges: [], admins: [], settings: {}, email: null };
     var main = $('#main');
-    var filters = { reg: { q: '', division: '', track: '', status: '' }, proj: { q: '', division: '', track: '', status: '' }, score: { division: '', track: '' } };
+    var filters = { reg: { q: '', division: '', track: '', status: '' }, proj: { q: '', division: '', track: '', status: '', award: '' }, score: { division: '', track: '' } };
 
     // =====================================================================
     // Boot
@@ -314,34 +314,87 @@
         });
     }
 
+    // Final awards, chosen right in the Projects table. Every live project is a finalist; a judged one
+    // defaults to Third Place. 1st/2nd/3rd are stored as the award (+ place), and the project stays a finalist,
+    // so the Results page and certificates read them as before.
+    var PLACES = [['finalist', 'Finalist', null], ['Third Place', '3rd', 3], ['Second Place', '2nd', 2], ['First Place', '1st', 1]];
+    function isLive(p) { return p.status !== 'withdrawn' && p.status !== 'rejected'; }
+    function placeOf(p) {  // { key, pending }: pending = shown as the default but not saved yet
+        if (PLACES.some(function (x) { return x[0] === p.award; })) return { key: p.award, pending: p.status !== 'finalist' };
+        if (p.award) return { key: 'other', pending: false };
+        if (p.status === 'finalist') return { key: 'finalist', pending: false };
+        return { key: reviewsOf(p).length ? 'Third Place' : 'finalist', pending: true };
+    }
+    function placeData(key) { var x = PLACES.filter(function (y) { return y[0] === key; })[0]; return { status: 'finalist', award: key === 'finalist' ? null : key, place: x[2] }; }
+    function placeButtons(p) {
+        if (!isLive(p)) return statusTag(p.status);
+        var c = placeOf(p);
+        return '<div class="seg award-seg' + (c.pending ? ' pending' : '') + '" data-award-for="' + p.$id + '">' + PLACES.map(function (x) {
+            return '<button type="button" data-place="' + esc(x[0]) + '" class="' + (x[0] === 'finalist' ? 'fin' : 'p' + x[2]) + (c.key === x[0] ? ' on' : '') + '">' + x[1] + '</button>';
+        }).join('') + '</div>' + (c.key === 'other' ? '<small>' + esc(p.award) + '</small>' : '');
+    }
+
     TABS.projects = function () {
         var unlinked = S.regs.filter(function (r) { return !r.projectId && r.status !== 'withdrawn' && r.status !== 'rejected'; }).length;
         main.innerHTML = head('Projects', 'What judges see: one row per entry, with no contact details.',
             '<button class="pbtn primary" id="p-build">Build from registrations' + (unlinked ? ' (' + unlinked + ' new)' : '') + '</button><button class="pbtn" id="p-refresh">Refresh reviews</button><button class="pbtn" id="p-assign">Assign judges…</button><button class="pbtn" id="p-csv">Export CSV</button>') +
-            reviewStats() + filterBar('proj', PROJ_STATUS) + '<div class="tbl-wrap" id="proj-table"></div>';
+            reviewStats() + '<div id="award-bar"></div>' + filterBar('proj', PROJ_STATUS) + '<div class="tbl-wrap" id="proj-table"></div>';
         var rowsNow = [];
+        function awardBar() {
+            var live = S.projects.filter(isLive), n = {}, pending = live.filter(function (p) { return placeOf(p).pending; });
+            live.forEach(function (p) { var k = placeOf(p).key; n[k] = (n[k] || 0) + 1; });
+            $('#award-bar').innerHTML = '<div class="toolbar"><span style="font-weight:600;margin-right:4px">Awards</span><div class="seg" id="award-filter">' +
+                [['', 'All', live.length]].concat(PLACES.slice().reverse().map(function (x) { return [x[0], x[1], n[x[0]] || 0]; })).map(function (x) {
+                    return '<button type="button" data-af="' + esc(x[0]) + '"' + (filters.proj.award === x[0] ? ' class="on"' : '') + '>' + x[1] + '<b>' + x[2] + '</b></button>';
+                }).join('') + '</div></div>' +
+                (pending.length ? '<div class="note" style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center"><span><b>' + pending.length + '</b> project' + (pending.length === 1 ? ' shows its' : 's show their') + ' default — <b>3rd Place</b> if judged, otherwise <b>Finalist</b> — but ' + (pending.length === 1 ? 'it is' : 'they are') + ' not saved yet. Save them before publishing results or making certificates.</span><button class="pbtn sm primary" id="award-save">Save defaults</button></div>' : '');
+            $$('#award-filter button').forEach(function (b) { b.addEventListener('click', function () { filters.proj.award = b.getAttribute('data-af'); awardBar(); draw(); }); });
+            if (pending.length) $('#award-save').addEventListener('click', function () {
+                var pg = progressPanel('Saving default awards');
+                X.pool(pending, function (p) {
+                    return X.updateRow(T.proj, p.$id, placeData(placeOf(p).key)).then(function (row) { S.projects[S.projects.indexOf(p)] = row; });
+                }, 3, function (a, b) { pg.tick(a, b, 'Projects'); }).then(function (res) {
+                    var bad = res.filter(function (r) { return !r.ok; });
+                    pg.done('<div class="note ok">Saved ' + (res.length - bad.length) + ' project(s).</div>' + (bad.length ? '<div class="note">' + bad.length + ' failed: ' + esc(bad[0].error.message) + '</div>' : ''));
+                });
+            });
+        }
         var draw = function () {
-            rowsNow = S.projects.filter(function (p) { return matches(p, filters.proj, ['entryNumber', 'title', 'members', 'teamName', 'country', 'xField']); })
+            S.projects.forEach(function (p) { p._school = (regsOf(p)[0] || {}).school || ''; }); // the school lives on the registration
+            rowsNow = S.projects.filter(function (p) { return matches(p, filters.proj, ['entryNumber', 'title', 'members', 'teamName', 'country', 'xField', '_school']) && (!filters.proj.award || (isLive(p) && placeOf(p).key === filters.proj.award)); })
                 .sort(function (a, b) { return (a.entryNumber || 0) - (b.entryNumber || 0); });
             $('#count-proj').textContent = rowsNow.length + ' of ' + S.projects.length;
-            $('#proj-table').innerHTML = rowsNow.length ? '<table class="tbl"><thead><tr><th>Entry</th><th>Project</th><th>Division</th><th>Track</th><th>Judges</th><th class="num">Reviews</th><th class="num">Avg / ' + CFG.SCORE_MAX + '</th><th>Status</th><th>Award</th></tr></thead><tbody>' +
+            $('#proj-table').innerHTML = rowsNow.length ? '<table class="tbl"><thead><tr><th>Entry</th><th>Project</th><th>School</th><th>Division</th><th>Track</th><th class="num">Reviews</th><th class="num">Avg / ' + CFG.SCORE_MAX + '</th><th>Award</th></tr></thead><tbody>' +
                 rowsNow.map(function (p) {
                     var rv = reviewsOf(p);
-                    return '<tr class="click" data-id="' + p.$id + '"><td class="num"><b>' + (p.entryNumber || '—') + '</b></td><td><b>' + esc(p.title) + '</b><small>' + esc(p.members) + '</small></td><td>' + esc(X.divLabel(p.division)) + '</td><td>' + esc(p.track) + '</td>' +
-                        '<td>' + ((p.assignedJudges || []).map(function (id) { return esc(judgeName(id)); }).join('<br>') || '<small>none</small>') + '</td>' +
-                        '<td class="num">' + rv.length + '</td><td class="num">' + n1(avg(rv, 'total')) + '</td><td>' + statusTag(p.status || 'submitted') + '</td><td>' + (p.award ? '<span class="tag gold">' + esc(p.award) + '</span>' : '') + '</td></tr>';
+                    return '<tr class="click" data-id="' + p.$id + '"><td class="num"><b>' + (p.entryNumber || '—') + '</b></td><td><b>' + esc(p.title) + '</b><small>' + esc(p.members) + '</small></td><td>' + esc(p._school || '—') + '</td><td style="white-space:nowrap">' + esc(X.divLabel(p.division)) + '</td><td>' + esc(p.track) + '</td>' +
+                        '<td class="num">' + rv.length + '</td><td class="num">' + n1(avg(rv, 'total')) + '</td><td>' + placeButtons(p) + '</td></tr>';
                 }).join('') + '</tbody></table>' : '<div class="empty">' + (S.projects.length ? 'No projects match.' : 'No projects yet. Click “Build from registrations” to create them.') + '</div>';
             $$('#proj-table tr.click').forEach(function (tr) { tr.addEventListener('click', function () { projectDrawer(byId(S.projects, tr.getAttribute('data-id'))); }); });
+            $$('#proj-table [data-award-for] button').forEach(function (b) {
+                b.addEventListener('click', function (e) {
+                    e.stopPropagation(); // don't open the details drawer
+                    var box = b.parentNode, p = byId(S.projects, box.getAttribute('data-award-for')), key = b.getAttribute('data-place');
+                    if (placeOf(p).key === key && !placeOf(p).pending) return;
+                    $$('button', box).forEach(function (x) { x.classList.toggle('on', x === b); x.disabled = true; });
+                    box.classList.remove('pending');
+                    X.updateRow(T.proj, p.$id, placeData(key)).then(function (row) {
+                        S.projects[S.projects.indexOf(p)] = row; awardBar();
+                        $$('button', box).forEach(function (x) { x.disabled = false; });
+                        X.toast('#' + (p.entryNumber || '') + ' ' + (key === 'finalist' ? 'Finalist' : key) + ' — saved.');
+                    }, function (err) { X.fail(err); draw(); });
+                });
+            });
         };
-        bindFilters('proj', draw); draw();
+        bindFilters('proj', draw); awardBar(); draw();
         $('#p-build').addEventListener('click', buildProjects);
         $('#p-refresh').addEventListener('click', function () { X.listAll(T.rev, X.inSeason(sid())).then(function (r) { S.reviews = r; X.toast('Reviews refreshed.'); route(); }, X.fail); });
         $('#p-assign').addEventListener('click', function () { assignDrawer(rowsNow); });
         $('#p-csv').addEventListener('click', function () {
             X.download('igniteai-projects-' + sid() + '.csv', X.toCsv(rowsNow.map(function (p) {
                 var rv = reviewsOf(p), o = X.clean(p); o.reviews = rv.length; o.average = n1(avg(rv, 'total'));
-                o.assignedJudges = (p.assignedJudges || []).map(judgeName); return o;
-            }), ['entryNumber', 'title', 'division', 'track', 'entryType', 'teamName', 'members', 'country', 'xField', 'status', 'assignedJudges', 'reviews', 'average', 'award', 'interviewTime', 'demoUrl', 'codeUrl']), 'text/csv');
+                o.assignedJudges = (p.assignedJudges || []).map(judgeName); o.school = (regsOf(p)[0] || {}).school || ''; return o;
+            }), ['entryNumber', 'title', 'school', 'division', 'track', 'entryType', 'teamName', 'members', 'country', 'xField', 'status', 'assignedJudges', 'reviews', 'average', 'award', 'interviewTime', 'demoUrl', 'codeUrl']), 'text/csv');
         });
     };
 

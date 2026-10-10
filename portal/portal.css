@@ -184,3 +184,13 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 .lock { text-align: center; padding: 18px; color: var(--muted); font-size: 14px; background: var(--paper-alt); border-radius: 6px; }
 .review-card .lbl2 { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 8px 0 2px; }
 @media (max-width: 900px) { .pick { grid-template-columns: repeat(5, 1fr); } .j-search input { font-size: 16px; } }
+
+/* Award picker in the admin Projects table */
+.award-seg { white-space: nowrap; }
+.award-seg button { padding: 6px 10px; font-size: 13px; }
+.award-seg button.on.fin { background: #2659a8; color: #fff; }
+.award-seg button.on.p3 { background: #a0622d; color: #fff; }
+.award-seg button.on.p2 { background: #6b7280; color: #fff; }
+.award-seg button.on.p1 { background: #c99a06; color: #fff; }
+.award-seg.pending button.on { opacity: .55; }
+.award-seg button[disabled] { cursor: wait; }
