@@ -899,7 +899,8 @@
             '<button class="pbtn" id="c-zip"' + (S.certs.length ? '' : ' disabled') + '>Download all as ZIP</button><button class="pbtn" id="c-links"' + (S.certs.length ? '' : ' disabled') + '>Export links CSV</button>') +
             (signer ? '' : '<div class="note">No signer name is set, so the signature line will be blank. Add one in <a href="#settings" style="text-decoration:underline">Settings</a> before issuing.</div>') +
             '<div class="panel"><h2>Issue certificates</h2><div class="p-actions">' +
-            '<button class="pbtn primary" data-issue="award">Award certificates for winners</button><button class="pbtn" data-issue="finalist">Finalist certificates</button><button class="pbtn" data-issue="participation">Participation for everyone</button></div>' +
+            '<button class="pbtn primary" data-issue="final">Issue certificates: winners + finalists</button><button class="pbtn" data-issue="participation">Participation for everyone</button></div>' +
+            '<p style="color:var(--muted);font-size:13.5px;margin-top:10px">Winners (1st / 2nd / 3rd or a special award) get an <b>award</b> certificate; every other finalist gets a <b>Finalist</b> certificate. One per student, so each team member gets their own.</p>' +
             '<p style="color:var(--muted);font-size:13.5px;margin-top:10px">Safe to press again — people who already have that certificate are skipped. Signed by <b>' + esc(signer || '—') + '</b>, ' + esc(S.settings.signerTitle || '') + ', dated ' + esc(S.settings.issuedOn || '—') + '.</p></div>' +
             '<div class="tbl-wrap">' + (S.certs.length ? '<table class="tbl"><thead><tr><th>Recipient</th><th>Type</th><th>Award</th><th>Project</th><th></th></tr></thead><tbody>' +
                 S.certs.slice().sort(function (a, b) { return a.recipientName.localeCompare(b.recipientName); }).map(function (c) {
@@ -943,33 +944,45 @@
     };
     function certUrl(id) { return (S.settings.siteUrl || X.siteBase()).replace(/\/$/, '') + '/certificate.html?id=' + id; }
 
+    // kind 'final' = the awards step: winners get an award certificate, every other finalist a Finalist one.
     function issue(kind) {
-        var todo = [];
+        if (kind === 'final') {
+            var unsaved = S.projects.filter(function (p) { return isLive(p) && placeOf(p).pending; }).length;
+            if (unsaved) return X.toast(unsaved + ' project(s) still show an unsaved default award. Go to Projects and click “Save defaults” first.', true);
+        }
+        var todo = [], fixes = [];
         S.regs.forEach(function (r) {
             if (r.status === 'rejected' || r.status === 'withdrawn') return;
             var p = r.projectId ? byId(S.projects, r.projectId) : null;
-            if (kind === 'award' && !(p && p.award)) return;
-            if (kind === 'finalist' && !(p && p.status === 'finalist')) return;
-            var awardText = kind === 'award' ? p.award : null;
+            var k = kind === 'final' ? (p && p.award ? 'award' : (p && p.status === 'finalist' ? 'finalist' : null)) : kind;
+            if (!k) return;
+            if (k === 'award' && !(p && p.award)) return;
+            if (k === 'finalist' && !(p && p.status === 'finalist')) return;
+            var awardText = k === 'award' ? p.award : null;
             studentsOf(r).forEach(function (st) {
-                var has = S.certs.some(function (c) { return c.registrationId === r.$id && c.recipientName === st.name && c.kind === kind && (c.awardText || null) === awardText; });
-                if (!has) todo.push({ r: r, p: p, awardText: awardText, name: st.name });
+                var mine = S.certs.filter(function (c) { return c.registrationId === r.$id && c.recipientName === st.name && c.kind === k; });
+                if (mine.some(function (c) { return (c.awardText || null) === awardText; })) return;
+                // The award changed since it was issued (e.g. 3rd -> 1st): update that certificate so its link keeps working.
+                if (k === 'award' && mine.length) fixes.push({ c: mine[0], awardText: awardText });
+                else todo.push({ r: r, p: p, awardText: awardText, name: st.name, kind: k });
             });
         });
-        if (!todo.length) return X.toast('Nobody new needs a ' + kind + ' certificate.');
-        if (!confirm('Issue ' + todo.length + ' ' + kind + ' certificate(s)?')) return;
+        if (!todo.length && !fixes.length) return X.toast('Everyone already has the right certificate.');
+        var nAward = todo.filter(function (t) { return t.kind === 'award'; }).length, nFin = todo.length - nAward;
+        if (!confirm('Issue ' + todo.length + ' certificate(s)' + (kind === 'final' ? ': ' + nAward + ' award, ' + nFin + ' finalist' : '') + (fixes.length ? ', and update ' + fixes.length + ' whose award changed' : '') + '?')) return;
         var pg = progressPanel('Issuing certificates');
-        X.pool(todo, function (t) {
+        X.pool(fixes.concat(todo), function (t) {
+            if (t.c) return X.updateRow(T.cert, t.c.$id, { awardText: t.awardText }).then(function (row) { S.certs[S.certs.indexOf(t.c)] = row; });
             return X.createRow(T.cert, {
                 season: sid(), eventName: S.season.name,
-                registrationId: t.r.$id, projectId: t.p ? t.p.$id : null, recipientName: t.name.slice(0, 200), kind: kind, awardText: t.awardText,
+                registrationId: t.r.$id, projectId: t.p ? t.p.$id : null, recipientName: t.name.slice(0, 200), kind: t.kind, awardText: t.awardText,
                 projectTitle: ((t.p && t.p.title) || t.r.projectTitle || '').slice(0, 200), division: (t.p && t.p.division) || t.r.division, track: (t.p && t.p.track) || t.r.track,
                 issuedOn: S.settings.issuedOn || null, signerName: S.settings.signerName || null, signerTitle: S.settings.signerTitle || null, email: t.r.parentEmail
             }).then(function (row) { S.certs.push(row); });
         }, 3, function (a, b) { pg.tick(a, b, 'Certificates'); }).then(function (res) {
             var bad = res.filter(function (x) { return !x.ok; });
             counts();
-            pg.done('<div class="note ok">Issued ' + (res.length - bad.length) + ' certificate(s). To email the links, go to Notifications and start from “Your certificate is ready”.</div>' + (bad.length ? '<div class="note">' + bad.length + ' failed: ' + esc(bad[0].error.message) + '</div>' : ''));
+            pg.done('<div class="note ok">Done: ' + (res.length - bad.length) + ' certificate(s). To email them, go to Notifications and start from the award or finalist template (the PDFs are attached).</div>' + (bad.length ? '<div class="note">' + bad.length + ' failed: ' + esc(bad[0].error.message) + '</div>' : ''));
         });
     }
 
