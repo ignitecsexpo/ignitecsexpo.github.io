@@ -715,6 +715,8 @@
         finalist: { name: 'Selected for the final (Zoom link + ID)', subject: 'Entry #{{entryNumber}}: you are in the {{eventName}} final — Sunday, October 4, 9:30 AM PT', body: 'Hello,\n\nCongratulations! “{{projectTitle}}” by {{studentNames}} has been selected for the final round of {{eventName}}.\n\nThe final interviews take place online on Zoom:\n\nWhen: {{interviewDate}}. The Zoom room opens at 9:30 AM PT.\nZoom link: https://zoom.us/j/82648176188\nZoom ID: 826 4817 6188\nYour entry number: {{entryNumber}}\n\nPlease note: you may be held in the Zoom waiting room, or let in a little later, while the judges finish with other students, so we can\u2019t guarantee you\u2019ll start right at 9:30 AM. If you aren\u2019t let in yet, please be patient \u2014 or come back and join any time between 9:30 and 11:30 AM PT.\n\nWhen you join, please set your Zoom name to your entry number and first name (for example “#{{entryNumber}} {{firstName}}”) so we can find you quickly. Every team member is welcome to join.\n\nHow to prepare:\n- Have a live, working demo ready, and keep a short backup video just in case.\n- Be ready to explain how you built it, step by step, including any AI tools you used.\n- Test your camera, microphone and screen sharing beforehand.\n\nWe can\u2019t wait to see what you built. Good luck!\n\nThe IgniteAI Expo team' },
         reminder: { name: 'Reminder: interview today (Zoom + waiting room)', subject: 'Today, 9:30 – 11:30 AM PT: your {{eventName}} interview (Entry #{{entryNumber}})', body: 'Hello,\n\nA quick reminder: the {{eventName}} final interviews are today, Sunday, October 4, from 9:30 to 11:30 AM PT, on Zoom.\n\nZoom link: https://zoom.us/j/82648176188\nZoom ID: 826 4817 6188\nYour entry number: {{entryNumber}}\nProject: {{projectTitle}}\n\nPlease note: you may be held in the Zoom waiting room, or let in a little later, while the judges finish with other students, so we can\u2019t guarantee you\u2019ll start right at 9:30 AM. If you aren\u2019t let in yet, please be patient \u2014 or come back and join any time between 9:30 and 11:30 AM PT.\n\nWhen you join, please set your Zoom name to your entry number and first name (for example \u201c#{{entryNumber}} {{firstName}}\u201d) so we can find you quickly.\n\nHave your live demo ready, with a short backup video just in case, and be ready to explain how you built it.\n\nGood luck, {{studentNames}}! We can\u2019t wait to see your project.\n\nThe IgniteAI Expo team' },
         thanks: { name: 'Thank you for interviewing (keep going with AI)', subject: 'Thank you for presenting at {{eventName}}!', body: 'Hello,\n\nThank you, {{studentNames}}, for presenting \u201c{{projectTitle}}\u201d at the {{eventName}} final interviews today. Building a project and then explaining it to a panel of judges takes real courage and hard work \u2014 you should be proud of what you did.\n\nOur judges were impressed by the creativity, effort and curiosity they saw today. Whatever happens next, please keep going with AI: keep building, keep asking questions, and keep finding new ways to combine AI with the things you love. Every project you make teaches you something new, and the skills you are building now will take you a long way.\n\nWinners will be announced later this week, on our website and by email:\n{{siteUrl}}\n\nThank you again for being part of {{eventName}}. We hope to see your next project!\n\nThe IgniteAI Expo team' },
+        awardcert: { name: 'Award winner — congratulations + certificate', attach: true, subject: 'Congratulations — {{award}} at {{eventName}}!', body: 'Hello,\n\nCongratulations! “{{projectTitle}}” by {{studentNames}} has earned {{award}} in the {{track}} track, Grade {{division}} division, at {{eventName}}.\n\nOur judges were truly impressed by this project — the ideas, the work that went into it, and the way it was presented. Out of hundreds of entries from around the world, this is a real achievement, and you should be very proud.\n\nYour certificate is attached to this email as a PDF (one for each student). You can also view and download it any time here:\n{{certificateUrl}}\n\nFull results: {{siteUrl}}/results.html?season={{season}}\n\nPlease keep building with AI — we can’t wait to see what you create next.\n\nThe IgniteAI Expo team' },
+        finalistcert: { name: 'Finalist — thank you + certificate', attach: true, subject: 'Your {{eventName}} Finalist certificate', body: 'Hello,\n\nThank you, {{studentNames}}, for presenting “{{projectTitle}}” as a Finalist at {{eventName}}. Reaching the final round is an accomplishment in itself, and our judges enjoyed seeing the creativity and effort behind your project.\n\nYour Finalist certificate is attached to this email as a PDF (one for each student). You can also view and download it any time here:\n{{certificateUrl}}\n\nThe full results are posted here: {{siteUrl}}/results.html?season={{season}}\n\nWhatever comes next, please keep going with AI: keep building, keep asking questions, and keep combining AI with the things you love. We hope to see your next project!\n\nThe IgniteAI Expo team' },
         interview: { name: 'Interview details', subject: 'Entry #{{entryNumber}}: your final interview — {{interviewDate}}', body: 'Hello,\n\n{{studentNames}} will present “{{projectTitle}}” to our judges.\n\nWhen: {{interviewDate}}\nYour time slot: {{interviewTime}}\nZoom link (Grade {{division}}): {{zoomLink}}\n\nPlease join a few minutes early. Have a live, working demo ready, and keep a backup video just in case. Judges will ask how the project was built, so be ready to explain it.\n\nGood luck!\nThe IgniteAI Expo team' },
         results: { name: 'Results announced', subject: '{{eventName}} results are out', body: 'Hello,\n\nThe {{eventName}} results have been announced:\n{{siteUrl}}/results.html?season={{season}}\n\nThank you to {{studentNames}} for presenting “{{projectTitle}}”. Every project this year took real work and imagination, and the judges were impressed.\n\nCertificates will follow in a separate email.\n\nThe IgniteAI Expo team' },
         winner: { name: 'Congratulations to a winner', subject: 'Congratulations — {{award}} at {{eventName}}', body: 'Hello,\n\nCongratulations! “{{projectTitle}}” earned the {{award}} in the {{track}} track, Grade {{division}} division, at {{eventName}}.\n\nFull results: {{siteUrl}}/results.html?season={{season}}\n\nCertificates:\n{{certificateUrl}}\n\nWe hope to see another project next year.\n\nThe IgniteAI Expo team' },
@@ -726,6 +728,7 @@
         accepted: ['Accepted registrations', function (r) { return r.status === 'accepted'; }],
         interviewed: ['Interviewed (a judge has reviewed the project)', function (r, p) { return !!p && reviewsOf(p).length > 0; }],
         finalists: ['Finalists', function (r, p) { return p && p.status === 'finalist'; }],
+        finalistsonly: ['Finalists without an award', function (r, p) { return !!p && p.status === 'finalist' && !p.award; }],
         winners: ['Award winners', function (r, p) { return p && p.award; }],
         nonwinners: ['Participants without an award', function (r, p) { return r.status !== 'rejected' && r.status !== 'withdrawn' && !(p && p.award); }],
         withcert: ['Anyone who has a certificate', function (r) { return !!bestCert(r); }]
@@ -771,6 +774,7 @@
             '<div class="f"><label>Division</label><select id="n-div">' + X.opts(CFG.DIVISIONS, '', 'All divisions') + '</select></div><div class="f"><label>Track</label><select id="n-track">' + X.opts(CFG.TRACKS, '', 'All tracks') + '</select></div></div>' +
             '<div class="f"><label>Subject</label><input id="n-subject"></div><div class="f"><label>Message</label><textarea id="n-body" style="min-height:260px"></textarea>' +
             '<small>Fill-ins: {{studentNames}} {{studentFullNames}} {{teamName}} {{parentName}} {{projectTitle}} {{track}} {{division}} {{award}} {{interviewDate}} {{interviewTime}} {{zoomLink}} {{certificateUrl}} {{entryNumber}} {{eventName}} {{siteUrl}}</small></div>' +
+            '<label style="display:flex;gap:8px;align-items:center;margin:-2px 0 14px;font-size:14px"><input type="checkbox" id="n-attach"> Attach each student\'s certificate (PDF) — issue certificates first, on the Certificates tab</label>' +
             '<div class="p-actions"><button class="pbtn primary" id="n-send">Send</button><button class="pbtn" id="n-test">Send a test to me</button><button class="pbtn" id="n-copy">Copy addresses</button><button class="pbtn" id="n-csv">Export mail-merge CSV</button></div></div>' +
             '<div class="panel"><h2>Preview <small id="n-count"></small></h2><div id="n-preview"></div></div></div>' +
             '<h2 style="font-family:var(--body);font-size:16px;margin:8px 0 10px">Sent</h2><div class="tbl-wrap">' + (S.notifs.length ? '<table class="tbl"><thead><tr><th>When</th><th>Subject</th><th>To</th><th class="num">Sent</th><th class="num">Failed</th><th>By</th></tr></thead><tbody>' +
@@ -802,12 +806,36 @@
             if (!list.length) { $('#n-preview').innerHTML = '<div class="empty">Nobody matches.</div>'; return; }
             var to = PEOPLE[$('#n-aud').value] ? list.map(function (y) { return y.to; }).join(', ') : x.to;
             $('#n-preview').innerHTML = (x.sample ? '<div class="note" style="font-size:13px">Fill-ins use entry #' + esc(x.sample.entryNumber) + ' as a sample, so you see what a family would get.</div>' : '') +
-                '<dl class="kv"><dt>To</dt><dd>' + esc(to) + (x.cc ? ' <span style="color:var(--muted)">cc ' + esc(x.cc) + '</span>' : '') + '</dd><dt>Subject</dt><dd><b>' + esc(fill($('#n-subject').value, x.fields)) + '</b></dd></dl><div class="prose" style="margin:0">' + esc(fill($('#n-body').value, x.fields)) + '</div>';
+                '<dl class="kv"><dt>To</dt><dd>' + esc(to) + (x.cc ? ' <span style="color:var(--muted)">cc ' + esc(x.cc) + '</span>' : '') + '</dd><dt>Subject</dt><dd><b>' + esc(fill($('#n-subject').value, x.fields)) + '</b></dd>' + attachLine(list, x) + '</dl><div class="prose" style="margin:0">' + esc(fill($('#n-body').value, x.fields)) + '</div>';
         }
-        ['n-aud', 'n-div', 'n-track'].forEach(function (id) { $('#' + id).addEventListener('change', preview); });
+        // Certificates travel with the email: the best certificate for each student of the entry.
+        function certsOfRecipient(x) { var r = x.reg || x.sample; return r ? certsFor(r) : []; }
+        function attachLine(list, x) {
+            if (!$('#n-attach').checked) return '';
+            var mine = certsOfRecipient(x), missing = list.filter(function (y) { return !certsOfRecipient(y).length; }).length;
+            return '<dt>Attachments</dt><dd>' + (mine.length ? mine.map(function (c) { return esc(ExpoCert.filename(certData(c))); }).join('<br>') : '<span style="color:var(--accent-dark)">No certificate issued for this entry yet</span>') +
+                (missing ? '<br><small style="color:var(--accent-dark)">' + missing + ' of ' + list.length + ' recipient' + (list.length === 1 ? ' has' : 's have') + ' no certificate yet and would get the email without one.</small>' : '') + '</dd>';
+        }
+        // An older server function would drop the PDFs silently, so don't send with attachments until it says it can.
+        function attachReady() {
+            if (!$('#n-attach').checked || (S.email && S.email.attachments)) return true;
+            X.toast('The email server has not been updated for attachments yet. Untick “Attach…”, or wait for the update.', true);
+            return false;
+        }
+        function blobToBase64(blob) {
+            return new Promise(function (resolve, reject) { var fr = new FileReader(); fr.onload = function () { resolve(String(fr.result).split(',')[1]); }; fr.onerror = reject; fr.readAsDataURL(blob); });
+        }
+        function attachmentsFor(x) {
+            if (!$('#n-attach').checked) return Promise.resolve(undefined);
+            return Promise.all(certsOfRecipient(x).slice(0, 6).map(function (c) {
+                var data = certData(c);
+                return ExpoCert.pdf(data, { quality: 0.8 }).then(blobToBase64).then(function (b64) { return { filename: ExpoCert.filename(data), content: b64 }; });
+            }));
+        }
+        ['n-aud', 'n-div', 'n-track', 'n-attach'].forEach(function (id) { $('#' + id).addEventListener('change', preview); });
         $('#n-aud').addEventListener('change', function () { var org = !!PEOPLE[this.value]; $('#n-div').disabled = $('#n-track').disabled = org; });
         ['n-subject', 'n-body'].forEach(function (id) { $('#' + id).addEventListener('input', preview); });
-        $('#n-tpl').addEventListener('change', function () { var t = TEMPLATES[this.value]; $('#n-subject').value = t.subject; $('#n-body').value = t.body; preview(); });
+        $('#n-tpl').addEventListener('change', function () { var t = TEMPLATES[this.value]; $('#n-subject').value = t.subject; $('#n-body').value = t.body; $('#n-attach').checked = !!t.attach; preview(); });
         preview();
 
         function compose(list) {
@@ -825,9 +853,11 @@
         });
         $('#n-test').addEventListener('click', function () {
             var list = recipients(); if (!list.length) return X.toast('Nobody matches, so there is nothing to preview.', true);
+            if (!attachReady()) return;
             var msgs = compose([list[0]]); if (!msgs) return;
             msgs[0].to = S.me.user.email; msgs[0].cc = undefined; msgs[0].subject = '[TEST] ' + msgs[0].subject;
-            X.callFn({ action: 'sendEmails', season: sid(), eventName: S.season.name, messages: msgs }).then(function (r) {
+            X.toast($('#n-attach').checked ? 'Rendering the certificate and sending the test…' : 'Sending the test…');
+            attachmentsFor(list[0]).then(function (att) { msgs[0].attachments = att; return X.callFn({ action: 'sendEmails', season: sid(), eventName: S.season.name, messages: msgs }); }).then(function (r) {
                 if (!r.ok) return X.toast(r.message, true);
                 X.toast(r.results[0].ok ? 'Test sent to ' + S.me.user.email + '.' : 'Test failed: ' + r.results[0].error, !r.results[0].ok);
             }, X.fail);
@@ -835,16 +865,22 @@
         $('#n-send').addEventListener('click', function () {
             var list = recipients(), msgs = compose(list); if (!msgs) return;
             if (!list.length) return X.toast('Nobody matches.', true);
-            if (!confirm('Send this email to ' + list.length + ' recipient(s) now?')) return;
-            var chunks = []; for (var i = 0; i < msgs.length; i += 10) chunks.push(msgs.slice(i, i + 10));
+            if (!attachReady()) return;
+            var attach = $('#n-attach').checked, missing = attach ? list.filter(function (y) { return !certsOfRecipient(y).length; }).length : 0;
+            if (!confirm('Send this email to ' + list.length + ' recipient(s) now?' + (attach ? '\n\nEach email carries its certificate PDF(s).' + (missing ? ' ' + missing + ' recipient(s) have no certificate yet and will get the email without one.' : '') : ''))) return;
+            // With certificates attached, each email is its own call (the PDFs make it large); otherwise 10 per call.
+            var size = attach ? 1 : 10, chunks = [];
+            for (var i = 0; i < msgs.length; i += size) chunks.push(msgs.slice(i, i + size).map(function (m, k) { return { msg: m, x: list[i + k] }; }));
             var pg = progressPanel('Sending email'), sent = 0, failed = [], fatal = null;
             X.pool(chunks, function (chunk) {
                 if (fatal) return null;
-                return X.callFn({ action: 'sendEmails', season: sid(), eventName: S.season.name, messages: chunk }).then(function (r) {
+                return Promise.all(chunk.map(function (c) { return attachmentsFor(c.x).then(function (att) { c.msg.attachments = att; return c.msg; }); })).then(function (ms) {
+                    return X.callFn({ action: 'sendEmails', season: sid(), eventName: S.season.name, messages: ms });
+                }).then(function (r) {
                     if (!r.ok) { fatal = r.message; return; }
                     r.results.forEach(function (x) { if (x.ok) sent++; else failed.push(x.to + ': ' + x.error); });
-                });
-            }, 1, function (a, b) { pg.tick(Math.min(a * 10, msgs.length), msgs.length, 'Emails'); }).then(function () {
+                }, function (e) { chunk.forEach(function (c) { failed.push(c.msg.to + ': ' + (e.message || e)); }); });
+            }, attach ? 2 : 1, function (a, b) { pg.tick(Math.min(a * size, msgs.length), msgs.length, 'Emails'); }).then(function () {
                 return X.createRow(T.notif, { season: sid(), subject: $('#n-subject').value.trim().slice(0, 300), body: $('#n-body').value.slice(0, 10000), audience: audienceLabel().slice(0, 300), recipientCount: msgs.length, sentCount: sent, failedCount: failed.length, status: fatal ? 'failed' : (failed.length ? 'partial' : 'sent'), sentBy: (S.me.user.name || S.me.user.email).slice(0, 120), errors: (fatal || failed.join(' | ')).slice(0, 4000) || null });
             }).then(function (row) {
                 S.notifs.unshift(row);

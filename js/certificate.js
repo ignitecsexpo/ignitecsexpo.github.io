@@ -135,10 +135,11 @@ var ExpoCert = (function () {
         });
     }
 
-    function pdf(c) {
+    // opts.quality: JPEG quality (0.92 for downloads; email attachments use less to stay small).
+    function pdf(c, opts) {
         return draw(c).then(function (cv) {
             var doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'letter' });
-            doc.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 792, 612);
+            doc.addImage(cv.toDataURL('image/jpeg', (opts && opts.quality) || 0.92), 'JPEG', 0, 0, 792, 612);
             doc.setProperties({ title: (TITLES[c.kind] || 'Certificate') + ' — ' + c.recipientName, author: 'IgniteAI Expo' });
             return doc.output('blob');
         });

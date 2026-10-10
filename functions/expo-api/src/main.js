@@ -11,7 +11,7 @@
 //   POST {action:"resetJudgePassword", userId}       admins   give a judge a new random password (returned once)
 //   POST {action:"emailStatus"}                      admins   is SMTP configured?
 //   POST {action:"listPeople"}                       admins   judges + admins with names and emails
-//   POST {action:"sendEmails", messages:[...]}       admins   send up to 15 emails per call
+//   POST {action:"sendEmails", messages:[...]}       admins   send up to 15 emails per call (each may carry PDF attachments)
 //
 // Registrations are written ONLY here (guests cannot write to the table), which is what lets us
 // hand out sequential entry numbers, enforce the deadline, and send the confirmation in one step.
@@ -76,10 +76,24 @@ export default async ({ req, res, log, error }) => {
             '<div style="border-top:1px solid #e7e2d8;margin-top:24px;padding-top:16px;font-size:13px;color:#8b909b">' + esc(eventName || 'IgniteAI Expo') + ' · igniteaiexpo.org</div>' +
             '</div></div>';
     };
+    // Optional PDF attachments (certificates), sent from the admin portal as base64.
+    const MAX_ATTACH = 6, MAX_ATTACH_BYTES = 4 * 1024 * 1024;
+    const attachmentsOf = (m) => {
+        const list = Array.isArray(m.attachments) ? m.attachments : [];
+        if (list.length > MAX_ATTACH) throw new Error('At most ' + MAX_ATTACH + ' attachments per email.');
+        return list.map((a) => {
+            const filename = String((a && a.filename) || '').replace(/[\\/\r\n]/g, '_').slice(0, 150);
+            const content = String((a && a.content) || '');
+            if (!/\.pdf$/i.test(filename) || !/^[A-Za-z0-9+/=]+$/.test(content)) throw new Error('Attachments must be PDF files.');
+            if (content.length * 0.75 > MAX_ATTACH_BYTES) throw new Error('An attachment is too large.');
+            return { filename, content, encoding: 'base64', contentType: 'application/pdf' };
+        });
+    };
     const send = async (mailer, cfg, m, eventName) => mailer.sendMail({
         from: { name: cfg.fromName || 'IgniteAI Expo', address: process.env.SMTP_FROM },
         replyTo: cfg.replyTo || undefined,
-        to: m.to, cc: m.cc || undefined, subject: m.subject, text: m.text, html: toHtml(m.text, eventName)
+        to: m.to, cc: m.cc || undefined, subject: m.subject, text: m.text, html: toHtml(m.text, eventName),
+        attachments: attachmentsOf(m)
     });
 
     // ---------------------------------------------------------------- register
@@ -412,7 +426,7 @@ export default async ({ req, res, log, error }) => {
         }
 
         if (body.action === 'emailStatus') {
-            return res.json({ ok: true, configured: smtpReady(), from: process.env.SMTP_FROM || null });
+            return res.json({ ok: true, configured: smtpReady(), from: process.env.SMTP_FROM || null, attachments: true });
         }
 
         if (body.action === 'sendEmails') {
@@ -424,7 +438,7 @@ export default async ({ req, res, log, error }) => {
             const results = [];
             for (const msg of messages) {
                 if (!msg || !msg.to || !msg.subject || !msg.text) { results.push({ to: msg && msg.to, ok: false, error: 'Missing to, subject or text' }); continue; }
-                try { await send(mailer, cfg, msg, body.eventName); results.push({ to: msg.to, ok: true }); }
+                try { await send(mailer, cfg, msg, body.eventName); results.push({ to: msg.to, ok: true, attached: (msg.attachments || []).length }); }
                 catch (e) { results.push({ to: msg.to, ok: false, error: String(e.message || e).slice(0, 200) }); }
             }
             return res.json({ ok: true, results });
