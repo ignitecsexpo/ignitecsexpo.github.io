@@ -88,7 +88,7 @@
         }).join('');
     }
     findSeason().then(function () { return page(null); }).then(function () {
-        if (!all.length) { sub.textContent = 'Winners of ' + season.name + ' will be announced here.'; return; }
+        if (!all.length) { sub.textContent = 'Results for ' + season.name + ' are shared with participants by email.'; return; }
         sub.textContent = 'Congratulations to every student who presented this year.';
         var present = DIVS.filter(function (d) { return all.some(function (r) { return r.division === d; }); });
         tabs.innerHTML = present.map(function (d) { return '<button data-d="' + d + '">Grade ' + d.replace('-', '–') + '</button>'; }).join('');
