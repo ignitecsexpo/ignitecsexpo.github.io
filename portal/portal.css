@@ -194,3 +194,4 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 .award-seg button.on.p1 { background: #c99a06; color: #fff; }
 .award-seg.pending button.on { opacity: .55; }
 .award-seg button[disabled] { cursor: wait; }
+.tbl-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 0 10px; }

@@ -510,7 +510,7 @@
             '<label style="display:flex;gap:8px;align-items:center;margin-bottom:14px"><input type="checkbox" id="js-open"' + (s.judgeSignupOpen === false ? '' : ' checked') + '> Sign-up is open</label>' +
             '<div class="p-actions"><button class="pbtn primary" id="js-save">Save</button><button class="pbtn" id="js-copy"' + (s.judgeSignupCode ? '' : ' disabled') + '>Copy invite link</button><button class="pbtn" id="js-copy-plain">Copy plain link (needs approval)</button><a class="pbtn" href="' + esc(inviteUrl || base) + '" target="_blank">Preview ↗</a></div>' +
             '<p style="color:var(--muted);font-size:13px;margin-top:10px;word-break:break-all">' + (inviteUrl ? esc(inviteUrl) + '<br>This link signs people up for <b>' + esc(S.season.name) + '</b>.' : 'Set an invite code and save to get an invite link.') + '</p></div>' +
-            '<h2 style="font-family:var(--body);font-size:16px;margin:0 0 10px">Sign-ups' + (pending.length ? ' <span class="tag gold">' + pending.length + ' waiting for approval</span>' : '') + '</h2>' +
+            '<div class="tbl-head"><h2 style="font-family:var(--body);font-size:16px;margin:0">Sign-ups' + (pending.length ? ' <span class="tag gold">' + pending.length + ' waiting for approval</span>' : '') + '</h2><button class="pbtn sm" data-csv="signups"' + (S.signups.length ? '' : ' disabled') + '>Download CSV</button></div>' +
             '<div class="tbl-wrap" style="margin-bottom:28px">' + (S.signups.length ? '<table class="tbl"><thead><tr><th>Name</th><th>From</th><th>Would like to judge</th><th>Status</th><th>Signed up</th><th></th></tr></thead><tbody>' +
                 S.signups.slice().sort(function (a, b) { return (a.status === 'pending' ? 0 : 1) - (b.status === 'pending' ? 0 : 1) || a.name.localeCompare(b.name); }).map(function (j) {
                     return '<tr class="click" data-signup="' + j.$id + '"><td><b>' + esc(j.name) + '</b><small>' + esc(j.email) + '</small></td><td>' + esc(j.affiliation) + '<small>' + esc(j.role) + '</small></td>' +
@@ -520,11 +520,36 @@
                 }).join('') + '</tbody></table>' : '<div class="empty">No one has signed up yet. Share the invite link above.</div>') + '</div>';
         main.innerHTML = head('Judges &amp; admins', 'Volunteers sign themselves up from the judge sign-up page; you can also invite someone directly by email.') + signupPanel +
             '<div class="panel"><h2>Invite a judge directly</h2><div class="toolbar" style="margin:0"><input type="search" id="j-name" placeholder="Name" style="max-width:220px"><input type="search" id="j-email" placeholder="Email" style="max-width:280px"><button class="pbtn primary" id="j-invite">Send invitation</button></div></div>' +
-            '<h2 style="font-family:var(--body);font-size:16px;margin:0 0 10px">Judges</h2>' + table(S.judges.filter(function (m) { return m.roles.indexOf('owner') === -1; }), 'judges') +
+            '<div class="tbl-head"><h2 style="font-family:var(--body);font-size:16px;margin:0">Judges</h2><button class="pbtn sm" data-csv="judges">Download CSV</button></div>' + table(S.judges.filter(function (m) { return m.roles.indexOf('owner') === -1; }), 'judges') +
             '<div class="panel" style="margin-top:28px"><h2>Invite another organizer <small>full access to everything here</small></h2><div class="toolbar" style="margin:0"><input type="search" id="a-name" placeholder="Name" style="max-width:220px"><input type="search" id="a-email" placeholder="Email" style="max-width:280px"><button class="pbtn" id="a-invite">Send invitation</button></div><p style="color:var(--muted);font-size:13.5px;margin-top:10px">They receive two emails (organizer access, and permission to manage judges) and should accept both.</p></div>' +
-            '<h2 style="font-family:var(--body);font-size:16px;margin:0 0 10px">Organizers</h2>' + table(S.admins, 'admins');
+            '<div class="tbl-head"><h2 style="font-family:var(--body);font-size:16px;margin:0">Organizers</h2><button class="pbtn sm" data-csv="admins">Download CSV</button></div>' + table(S.admins, 'admins');
 
 
+        // CSV downloads of the three tables (judges include their sign-up details and judging activity).
+        var day = new Date().toISOString().slice(0, 10);
+        $$('[data-csv]').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var which = b.getAttribute('data-csv'), rows, cols;
+                if (which === 'signups') {
+                    rows = S.signups.map(function (j) { return { name: j.name, email: j.email, phone: j.phone, affiliation: j.affiliation, role: j.role, status: j.status, divisions: j.divisions, tracks: j.tracks, knowsStudents: j.conflicts, background: j.background, signedUp: j.$createdAt }; });
+                    cols = ['name', 'email', 'phone', 'affiliation', 'role', 'status', 'divisions', 'tracks', 'knowsStudents', 'background', 'signedUp'];
+                } else if (which === 'judges') {
+                    rows = S.judges.filter(function (m) { return m.roles.indexOf('owner') === -1; }).map(function (m) {
+                        var su = S.signups.filter(function (j) { return j.userId === m.userId; })[0] || {};
+                        var mine = S.reviews.filter(function (v) { return v.judgeId === m.userId && v.submitted; });
+                        return { name: m.userName, email: m.userEmail, status: m.confirm ? 'active' : 'invited', affiliation: su.affiliation, role: su.role, phone: su.phone,
+                            assigned: S.projects.filter(function (p) { return (p.assignedJudges || []).indexOf(m.userId) > -1; }).length,
+                            reviewsSubmitted: mine.length, averageTotalGiven: mine.length ? n1(avg(mine, 'total')) : '', joined: m.joined || '' };
+                    });
+                    cols = ['name', 'email', 'status', 'affiliation', 'role', 'phone', 'assigned', 'reviewsSubmitted', 'averageTotalGiven', 'joined'];
+                } else {
+                    rows = S.admins.map(function (m) { return { name: m.userName, email: m.userEmail, status: m.confirm ? 'active' : 'invited', joined: m.joined || '' }; });
+                    cols = ['name', 'email', 'status', 'joined'];
+                }
+                X.download('igniteai-' + which + '-' + sid() + '-' + day + '.csv', X.toCsv(rows, cols), 'text/csv');
+                X.toast(rows.length + ' row(s) downloaded.');
+            });
+        });
         $('#js-gen').addEventListener('click', function () { var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', c = 'JUDGE-'; for (var i = 0; i < 6; i++) c += a.charAt(Math.floor(Math.random() * a.length)); $('#js-code').value = c; });
         $('#js-save').addEventListener('click', function () {
             X.updateRow(T.set, sid(), { judgeSignupCode: $('#js-code').value.trim() || null, judgeDiscordUrl: $('#js-discord').value.trim() || null, judgeCommitment: $('#js-commit').value.trim() || null, judgeSignupOpen: $('#js-open').checked,
